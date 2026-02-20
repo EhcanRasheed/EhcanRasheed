@@ -21,9 +21,15 @@ export default function Dashboard() {
     }
   };
 
+  const stats = [
+    { label: 'Interviews Completed', value: '12', icon: '🎯', color: '#00d9ff' },
+    { label: 'Resume Score', value: '8.5/10', icon: '⭐', color: '#0099ff' },
+    { label: 'Learning Streak', value: '7 Days', icon: '🔥', color: '#3b82f6' },
+  ];
+
   return (
     <div style={styles.workspace}>
-      {/* FIXED SIDEBAR - ALWAYS VISIBLE AT 280px */}
+      {/* PREMIUM SIDEBAR */}
       <aside style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
           <div style={styles.logoBox}>HC</div>
@@ -32,31 +38,29 @@ export default function Dashboard() {
 
         <nav style={styles.sideNav}>
           <Link to="/dashboard" style={styles.sideNavLinkActive}>
-            Home
+            <span style={styles.navIcon}>⌘</span> Home
           </Link>
           <Link to="/resume" style={styles.sideNavLink}>
-            Resume Lab
+            <span style={styles.navIcon}>📄</span> Resume Lab
           </Link>
           <Link to="/chatbot" style={styles.sideNavLink}>
-            Chatbot
+            <span style={styles.navIcon}>💬</span> Chatbot
           </Link>
           <Link to="/interview" style={styles.sideNavLink}>
-            Interview Preparation
+            <span style={styles.navIcon}>🎤</span> Interview Prep
           </Link>
+
+          <div style={styles.divider}></div>
 
           <div
             style={styles.accountTabTrigger}
             onClick={() => setIsAccountOpen(!isAccountOpen)}
           >
-            <span>Account</span>
-            <span
-              style={{
-                transform: isAccountOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: '0.2s',
-              }}
-            >
-              ▼
-            </span>
+            <span>⚙️ Account</span>
+            <span style={{
+              transform: isAccountOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: '0.2s',
+            }}>▼</span>
           </div>
 
           {isAccountOpen && (
@@ -79,76 +83,119 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div style={styles.premiumDivider}>Enterprise Tier</div>
+          <div style={styles.premiumDivider}>ENTERPRISE</div>
           <Link to="/hiring-ease" style={styles.premiumLink}>
-            <span>Hiring Ease</span>
+            <span>🚀 Hiring Ease</span>
             <span style={styles.badge}>Pro</span>
           </Link>
         </nav>
       </aside>
 
       <main style={styles.mainContent}>
+        {/* HEADER */}
         <header style={styles.topBar}>
           <div>
             <h1 style={styles.pageTitle}>
-              Welcome, {user?.name || 'Professional'}
+              Welcome back, <span style={styles.nameHighlight}>{user?.name || 'Professional'}</span>
             </h1>
             <p style={styles.subText}>
-              Your AI-powered career command center.
+              Your AI-powered career command center
             </p>
           </div>
         </header>
 
-        <div style={styles.grid}>
-          <div style={styles.card} onClick={() => navigate('/resume')}>
-            <h3 style={styles.cardTitle}>Resume Analysis</h3>
+        {/* STATS BENTO GRID */}
+        <div style={styles.statsGrid}>
+          {stats.map((stat, idx) => (
+            <div key={idx} style={{...styles.statCard, borderTopColor: stat.color}}>
+              <div style={styles.statIcon}>{stat.icon}</div>
+              <p style={styles.statLabel}>{stat.label}</p>
+              <p style={{...styles.statValue, color: stat.color}}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* MAIN CONTENT GRID - BENTO STYLE */}
+        <div style={styles.contentGrid}>
+          {/* RESUME ANALYSIS - LARGE CARD */}
+          <div 
+            style={{...styles.card, gridColumn: 'span 2', gridRow: 'span 1'}}
+            onClick={() => navigate('/resume')}
+          >
+            <div style={styles.cardHeader}>
+              <h3 style={styles.cardTitle}>📄 Resume Analysis</h3>
+              <div style={styles.cardBadge}>AI Powered</div>
+            </div>
             <p style={styles.cardDesc}>
-              Upload your document for deep-dive ATS keyword scanning and structural optimization.
+              Upload your document for deep-dive ATS keyword scanning and structural optimization. Get instant feedback on formatting and content.
             </p>
+            <button style={styles.primaryBtn}>Start Analysis →</button>
           </div>
 
-          <div style={styles.card} onClick={() => navigate('/chatbot')}>
-            <h3 style={styles.cardTitle}>Chatbot</h3>
+          {/* CHATBOT - MEDIUM CARD */}
+          <div 
+            style={{...styles.card, gridColumn: 'span 1', gridRow: 'span 1'}}
+            onClick={() => navigate('/chatbot')}
+          >
+            <div style={styles.cardHeader}>
+              <h3 style={styles.cardTitle}>💬 Crafty</h3>
+            </div>
             <p style={styles.cardDesc}>
-              Engage in casual practice with Crafty to refine your technical explanations and logic.
+              Practice with AI. Refine technical explanations.
             </p>
+            <button style={styles.primaryBtn}>Chat Now →</button>
           </div>
 
-          <div style={styles.card} onClick={() => navigate('/interview')}>
-            <h3 style={styles.cardTitle}>Interview Preparation</h3>
+          {/* INTERVIEW PREP - LARGE CARD */}
+          <div 
+            style={{...styles.card, gridColumn: 'span 1', gridRow: 'span 1'}}
+            onClick={() => navigate('/interview')}
+          >
+            <div style={styles.cardHeader}>
+              <h3 style={styles.cardTitle}>🎤 Mock Interview</h3>
+            </div>
             <p style={styles.cardDesc}>
-              Participate in a formal AI-driven simulation for your target role and industry.
+              Simulate real interviews for your target role.
             </p>
+            <button style={styles.primaryBtn}>Practice →</button>
           </div>
 
-          <div style={styles.enterpriseCard} onClick={() => navigate('/hiring-ease')}>
-            <h3 style={styles.cardTitle}>Hiring Ease</h3>
+          {/* HIRING EASE - PREMIUM CARD */}
+          <div 
+            style={{...styles.card, ...styles.premiumCard, gridColumn: 'span 2'}}
+            onClick={() => navigate('/hiring-ease')}
+          >
+            <div style={styles.cardHeader}>
+              <h3 style={styles.cardTitle}>🚀 Hiring Ease</h3>
+              <div style={{...styles.cardBadge, background: 'linear-gradient(135deg, #00d9ff, #0099ff)'}}>
+                Enterprise
+              </div>
+            </div>
             <p style={styles.cardDesc}>
-              Mass interview tools for corporations using shared access links.
+              Mass interview tools for corporations using shared access links. Streamline bulk hiring with AI.
             </p>
-            <button style={styles.maroonBtn}>Manage Enterprise</button>
+            <button style={styles.primaryBtn}>Explore Enterprise →</button>
           </div>
         </div>
 
+        {/* FOOTER */}
         <footer style={styles.footer}>
-          <div style={styles.footerGrid}>
-            <div style={styles.footerBrandCol}>
-              <div style={styles.footerLogoRow}>
-                <div style={styles.logoBoxSmall}>HC</div>
-                <span style={styles.footerBrandName}>HireCraft</span>
+          <div style={styles.footerContent}>
+            <div style={styles.footerBrand}>
+              <div style={styles.footerLogo}>HC</div>
+              <div>
+                <p style={styles.footerTitle}>HireCraft</p>
+                <p style={styles.footerSubtitle}>AI-powered recruitment platform</p>
               </div>
-              <p style={styles.footerDescription}>
-                Crafting the future of recruitment through generative AI and data-driven insights.
-              </p>
             </div>
-            <div style={styles.footerNavCol}>
-              <h4 style={styles.footerHeader}>Product</h4>
-              <span style={styles.footerLink} onClick={() => navigate('/resume')}>Resume Lab</span>
-              <span style={styles.footerLink} onClick={() => navigate('/chatbot')}>AI Chatbot</span>
-              <span style={styles.footerLink} onClick={() => navigate('/interview')}>Mock Interviews</span>
+            <div style={styles.footerLinks}>
+              <a onClick={() => navigate('/resume')} style={styles.footerLink}>Resume Lab</a>
+              <a onClick={() => navigate('/chatbot')} style={styles.footerLink}>AI Chatbot</a>
+              <a onClick={() => navigate('/interview')} style={styles.footerLink}>Interviews</a>
+              <a onClick={() => navigate('/hiring-ease')} style={styles.footerLink}>Enterprise</a>
             </div>
           </div>
-          <div style={styles.copyrightSection}>
+          <div style={styles.footerBottom}>
             <p>© 2026 HireCraft AI. All rights reserved.</p>
           </div>
         </footer>
@@ -158,20 +205,20 @@ export default function Dashboard() {
       {showLogoutModal && (
         <div style={styles.overlay}>
           <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>Sign Out?</h2>
-            <p style={styles.modalText}>
-              Are you sure you want to end your session?
-            </p>
-            <div style={styles.modalActions}>
-              <button
-                style={styles.cancelBtn}
-                onClick={() => setShowLogoutModal(false)}
-              >
-                Stay
-              </button>
-              <button style={styles.confirmBtn} onClick={handleLogout}>
-                Sign Out
-              </button>
+            <div style={styles.modalContent}>
+              <h2 style={styles.modalTitle}>Sign Out?</h2>
+              <p style={styles.modalText}>Are you sure you want to end your session?</p>
+              <div style={styles.modalActions}>
+                <button
+                  style={styles.secondaryBtn}
+                  onClick={() => setShowLogoutModal(false)}
+                >
+                  Stay
+                </button>
+                <button style={styles.dangerBtn} onClick={handleLogout}>
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -185,15 +232,17 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     width: '100%',
-    background: '#f8fafc',
-    color: '#1e293b',
+    background: 'linear-gradient(135deg, #0a0e27 0%, #111827 100%)',
+    color: '#f8fafc',
     fontFamily: "'Inter', sans-serif",
   },
 
+  /* SIDEBAR */
   sidebar: {
     width: '280px',
-    background: '#ffffff',
-    borderRight: '1px solid #e2e8f0',
+    background: 'rgba(17, 24, 39, 0.95)',
+    backdropFilter: 'blur(12px)',
+    borderRight: '1px solid rgba(0, 217, 255, 0.1)',
     display: 'flex',
     flexDirection: 'column',
     padding: '32px 24px 200px 24px',
@@ -202,6 +251,7 @@ const styles = {
     left: 0,
     height: '100vh',
     zIndex: 100,
+    overflow: 'auto',
   },
 
   sidebarHeader: {
@@ -212,21 +262,24 @@ const styles = {
   },
 
   logoBox: {
-    width: 34,
-    height: 34,
-    background: '#0f172a',
-    borderRadius: '8px',
-    color: '#fff',
+    width: 40,
+    height: 40,
+    background: 'linear-gradient(135deg, #00d9ff, #0099ff)',
+    borderRadius: '10px',
+    color: '#0a0e27',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 800,
+    fontSize: '18px',
+    boxShadow: '0 0 20px rgba(0, 217, 255, 0.3)',
   },
 
   brandName: {
     fontWeight: 700,
-    fontSize: '1.2rem',
-    color: '#0f172a',
+    fontSize: '1.3rem',
+    color: '#f8fafc',
+    letterSpacing: '-0.5px',
   },
 
   sideNav: {
@@ -238,32 +291,57 @@ const styles = {
 
   sideNavLink: {
     textDecoration: 'none',
-    color: '#64748b',
+    color: '#cbd5e1',
     padding: '12px 16px',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
     fontWeight: 500,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    transition: 'all 0.2s ease',
+    ':hover': {
+      background: 'rgba(0, 217, 255, 0.1)',
+      color: '#00d9ff',
+    }
   },
 
   sideNavLinkActive: {
     textDecoration: 'none',
-    color: '#0f172a',
-    background: '#f1f5f9',
+    color: '#00d9ff',
+    background: 'rgba(0, 217, 255, 0.15)',
     padding: '12px 16px',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
     fontWeight: 600,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    borderLeft: '3px solid #00d9ff',
+    paddingLeft: '13px',
+  },
+
+  navIcon: {
+    fontSize: '16px',
+  },
+
+  divider: {
+    height: '1px',
+    background: 'rgba(0, 217, 255, 0.1)',
+    margin: '12px 0',
   },
 
   accountTabTrigger: {
     cursor: 'pointer',
-    color: '#64748b',
+    color: '#cbd5e1',
     padding: '12px 16px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     fontSize: '14px',
     fontWeight: 500,
+    borderRadius: '10px',
+    transition: 'all 0.2s ease',
   },
 
   nestedMenu: {
@@ -272,7 +350,7 @@ const styles = {
     gap: '2px',
     paddingLeft: '24px',
     marginBottom: '8px',
-    borderLeft: '2px solid #f1f5f9',
+    borderLeft: '2px solid rgba(0, 217, 255, 0.2)',
     marginLeft: '16px',
   },
 
@@ -281,6 +359,8 @@ const styles = {
     color: '#94a3b8',
     padding: '8px 12px',
     fontSize: '13px',
+    borderRadius: '6px',
+    transition: 'all 0.2s ease',
   },
 
   premiumDivider: {
@@ -296,39 +376,44 @@ const styles = {
 
   premiumLink: {
     textDecoration: 'none',
-    color: '#800000',
+    color: '#00d9ff',
     padding: '12px 16px',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
     fontWeight: 600,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: '#fff5f5',
+    background: 'rgba(0, 217, 255, 0.1)',
+    border: '1px solid rgba(0, 217, 255, 0.2)',
+    transition: 'all 0.2s ease',
   },
 
   badge: {
     fontSize: '10px',
-    background: '#800000',
-    color: '#fff',
-    padding: '2px 6px',
+    background: 'linear-gradient(135deg, #00d9ff, #0099ff)',
+    color: '#0a0e27',
+    padding: '2px 8px',
     borderRadius: '4px',
+    fontWeight: 700,
   },
 
   logoutTrigger: {
     width: '100%',
-    background: '#fef2f2',
-    border: '1px solid #fecaca',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
     padding: '10px 12px',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: '#dc2626',
+    color: '#ef4444',
     fontWeight: 600,
     fontSize: '14px',
     marginTop: '8px',
     textAlign: 'left',
+    transition: 'all 0.2s ease',
   },
 
+  /* MAIN CONTENT */
   mainContent: {
     flex: 1,
     display: 'flex',
@@ -340,157 +425,239 @@ const styles = {
   topBar: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '40px',
+    alignItems: 'flex-start',
+    marginBottom: '48px',
+    paddingBottom: '24px',
+    borderBottom: '1px solid rgba(0, 217, 255, 0.1)',
   },
 
   pageTitle: {
-    fontSize: '1.8rem',
+    fontSize: '2.5rem',
     fontWeight: 800,
-    color: '#0f172a',
+    color: '#f8fafc',
     margin: 0,
+    letterSpacing: '-1px',
+  },
+
+  nameHighlight: {
+    background: 'linear-gradient(135deg, #00d9ff, #0099ff)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
   },
 
   subText: {
-    color: '#64748b',
-    fontSize: '14px',
-    marginTop: '4px',
+    color: '#cbd5e1',
+    fontSize: '16px',
+    marginTop: '8px',
   },
 
-  grid: {
+  /* STATS GRID */
+  statsGrid: {
     display: 'grid',
-    gap: '24px',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-  },
-
-  card: {
-    background: '#ffffff',
-    border: '1px solid #e2e8f0',
-    padding: '32px',
-    borderRadius: '24px',
-    cursor: 'pointer',
-  },
-
-  enterpriseCard: {
-    background: '#ffffff',
-    border: '1px solid #e2e8f0',
-    borderTop: '6px solid #800000',
-    padding: '32px',
-    borderRadius: '24px',
-  },
-
-  cardTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    color: '#0f172a',
-    marginBottom: '12px',
-  },
-
-  cardDesc: {
-    color: '#64748b',
-    fontSize: '14px',
-    lineHeight: 1.6,
-    marginBottom: '24px',
-  },
-
-  maroonBtn: {
-    width: '100%',
-    padding: '12px',
-    borderRadius: '12px',
-    background: '#800000',
-    border: 'none',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-
-  footer: {
-    marginTop: '80px',
-    paddingTop: '60px',
-    borderTop: '1px solid #e2e8f0',
-  },
-
-  footerGrid: {
-    display: 'flex',
-    justifyContent: 'space-between',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '20px',
     marginBottom: '48px',
   },
 
-  footerBrandCol: {
+  statCard: {
+    background: 'rgba(17, 24, 39, 0.6)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 217, 255, 0.1)',
+    borderRadius: '16px',
+    padding: '24px',
+    borderTop: '3px solid #00d9ff',
+    transition: 'all 0.3s ease',
+  },
+
+  statIcon: {
+    fontSize: '32px',
+    marginBottom: '12px',
+  },
+
+  statLabel: {
+    fontSize: '12px',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '8px',
+  },
+
+  statValue: {
+    fontSize: '28px',
+    fontWeight: 800,
+    color: '#00d9ff',
+  },
+
+  /* CONTENT GRID */
+  contentGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '24px',
+    marginBottom: '60px',
+  },
+
+  card: {
+    background: 'rgba(17, 24, 39, 0.6)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 217, 255, 0.1)',
+    borderRadius: '20px',
+    padding: '32px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    justifyContent: 'space-between',
   },
 
-  footerLogoRow: {
+  cardHeader: {
     display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '16px',
   },
 
-  logoBoxSmall: {
-    width: 30,
-    height: 30,
-    background: '#0f172a',
+  cardTitle: {
+    fontSize: '1.4rem',
+    fontWeight: 700,
+    color: '#f8fafc',
+    marginBottom: '0',
+  },
+
+  cardBadge: {
+    fontSize: '11px',
+    background: 'rgba(0, 217, 255, 0.2)',
+    color: '#00d9ff',
+    padding: '4px 10px',
     borderRadius: '6px',
-    color: '#fff',
+    fontWeight: 600,
+  },
+
+  cardDesc: {
+    color: '#cbd5e1',
+    fontSize: '14px',
+    lineHeight: 1.6,
+    marginBottom: '20px',
+    flex: 1,
+  },
+
+  premiumCard: {
+    background: 'linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 153, 255, 0.05))',
+    borderColor: 'rgba(0, 217, 255, 0.3)',
+  },
+
+  /* BUTTONS */
+  primaryBtn: {
+    background: 'linear-gradient(135deg, #00d9ff, #0099ff)',
+    color: '#0a0e27',
+    border: 'none',
+    padding: '12px 24px',
+    borderRadius: '10px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontSize: '14px',
+    width: 'fit-content',
+  },
+
+  secondaryBtn: {
+    flex: 1,
+    background: 'rgba(203, 213, 225, 0.1)',
+    border: '1px solid rgba(203, 213, 225, 0.2)',
+    color: '#cbd5e1',
+    padding: '14px',
+    borderRadius: '10px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+
+  dangerBtn: {
+    flex: 1,
+    background: 'rgba(239, 68, 68, 0.2)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#ef4444',
+    padding: '14px',
+    borderRadius: '10px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+
+  /* FOOTER */
+  footer: {
+    marginTop: '60px',
+    paddingTop: '40px',
+    borderTop: '1px solid rgba(0, 217, 255, 0.1)',
+  },
+
+  footerContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '40px',
+  },
+
+  footerBrand: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '16px',
+  },
+
+  footerLogo: {
+    width: 40,
+    height: 40,
+    background: 'linear-gradient(135deg, #00d9ff, #0099ff)',
+    borderRadius: '8px',
+    color: '#0a0e27',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 800,
-    fontSize: '12px',
   },
 
-  footerBrandName: {
-    fontWeight: 700,
+  footerTitle: {
     fontSize: '1.1rem',
-    color: '#0f172a',
-  },
-
-  footerDescription: {
-    color: '#64748b',
-    fontSize: '14px',
-    lineHeight: 1.6,
-    maxWidth: '300px',
-  },
-
-  footerNavCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-  },
-
-  footerHeader: {
-    fontSize: '14px',
     fontWeight: 700,
-    color: '#0f172a',
-    marginBottom: '8px',
-    textTransform: 'uppercase',
+    color: '#f8fafc',
+    margin: '0 0 4px 0',
+  },
+
+  footerSubtitle: {
+    fontSize: '13px',
+    color: '#94a3b8',
+    margin: 0,
+  },
+
+  footerLinks: {
+    display: 'flex',
+    gap: '32px',
   },
 
   footerLink: {
-    textDecoration: 'none',
-    color: '#64748b',
+    color: '#cbd5e1',
     fontSize: '14px',
     cursor: 'pointer',
+    transition: 'color 0.2s ease',
+    textDecoration: 'none',
   },
 
-  copyrightSection: {
-    padding: '24px 0',
-    borderTop: '1px solid #f1f5f9',
+  footerBottom: {
+    padding: '20px 0',
+    borderTop: '1px solid rgba(0, 217, 255, 0.1)',
     textAlign: 'center',
     color: '#94a3b8',
     fontSize: '13px',
   },
 
+  /* MODAL */
   overlay: {
     position: 'fixed',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    background: 'rgba(15, 23, 42, 0.6)',
-    backdropFilter: 'blur(4px)',
+    background: 'rgba(10, 14, 39, 0.8)',
+    backdropFilter: 'blur(8px)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -498,10 +665,16 @@ const styles = {
   },
 
   modal: {
-    background: '#fff',
+    background: 'rgba(17, 24, 39, 0.95)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 217, 255, 0.2)',
+    borderRadius: '20px',
+    width: '420px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+  },
+
+  modalContent: {
     padding: '40px',
-    borderRadius: '24px',
-    width: '380px',
     textAlign: 'center',
   },
 
@@ -509,37 +682,17 @@ const styles = {
     marginBottom: '12px',
     fontSize: '1.5rem',
     fontWeight: 800,
+    color: '#f8fafc',
   },
 
   modalText: {
-    color: '#64748b',
+    color: '#cbd5e1',
     fontSize: '14px',
-    marginBottom: '24px',
+    marginBottom: '32px',
   },
 
   modalActions: {
     display: 'flex',
     gap: '12px',
-  },
-
-  confirmBtn: {
-    flex: 1,
-    background: '#ef4444',
-    color: '#fff',
-    border: 'none',
-    padding: '14px',
-    borderRadius: '12px',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-
-  cancelBtn: {
-    flex: 1,
-    background: '#f1f5f9',
-    border: '1px solid #e2e8f0',
-    padding: '14px',
-    borderRadius: '12px',
-    fontWeight: 600,
-    cursor: 'pointer',
   },
 };
