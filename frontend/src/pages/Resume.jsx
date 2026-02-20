@@ -311,10 +311,11 @@ const styles = {
     display: 'flex', 
     minHeight: '100vh', 
     width: '100%', 
-    background: '#ffffff', 
-    color: '#1e293b', 
-    fontFamily: "'Inter', sans-serif", 
-    overflowX: 'hidden' 
+    background: '#030303', 
+    color: '#ffffff', 
+    fontFamily: 'system-ui, -apple-system, sans-serif', 
+    overflowX: 'hidden',
+    position: 'relative'
   },
 
   // --- NAVBAR & SIDEBAR ---
@@ -323,14 +324,15 @@ const styles = {
     left: 0, 
     top: 0, 
     bottom: 0, 
-    width: '12px', 
+    width: '8px', 
     zIndex: 150, 
-    background: '#800000', 
+    background: 'rgba(255, 255, 255, 0.08)', 
     cursor: 'pointer' 
   },
   sidebar: { 
-    background: '#ffffff', 
-    borderRight: '1px solid #e2e8f0', 
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    borderRight: '1px solid rgba(255, 255, 255, 0.08)', 
     display: 'flex', 
     flexDirection: 'column', 
     padding: '32px 24px', 
@@ -350,47 +352,48 @@ const styles = {
     cursor: 'pointer' 
   },
   logoBox: { 
-    minWidth: '34px', 
-    height: '34px', 
-    background: '#0f172a', 
+    minWidth: '40px', 
+    height: '40px', 
+    background: '#ffffff', 
     borderRadius: '8px', 
-    color: '#fff', 
+    color: '#030303', 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center', 
     fontWeight: 800 
   },
-  brandName: { fontWeight: 700, fontSize: '1.2rem', color: '#0f172a' },
-  sideNav: { display: 'flex', flexDirection: 'column', gap: '4px' },
+  brandName: { fontWeight: 700, fontSize: '1rem', color: '#ffffff' },
+  sideNav: { display: 'flex', flexDirection: 'column', gap: '2px' },
   sideNavLink: { 
     textDecoration: 'none', 
-    color: '#64748b', 
-    padding: '12px 16px', 
-    borderRadius: '8px', 
-    fontSize: '14px', 
+    color: '#888888', 
+    padding: '10px 12px', 
+    borderRadius: '6px', 
+    fontSize: '13px', 
     fontWeight: 500 
   },
   sideNavLinkActive: { 
     textDecoration: 'none', 
-    color: '#0f172a', 
-    background: '#f1f5f9', 
-    padding: '12px 16px', 
-    borderRadius: '8px', 
-    fontSize: '14px', 
-    fontWeight: 600 
+    color: '#ffffff', 
+    background: 'rgba(255, 255, 255, 0.08)', 
+    padding: '10px 12px', 
+    borderRadius: '6px', 
+    fontSize: '13px', 
+    fontWeight: 600,
+    border: '1px solid rgba(255, 255, 255, 0.12)'
   },
   accountTabTrigger: { 
     cursor: 'pointer', 
-    padding: '12px 16px', 
+    padding: '10px 12px', 
     display: 'flex', 
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    fontSize: '14px', 
+    fontSize: '13px', 
     fontWeight: 500, 
-    color: '#64748b' 
+    color: '#888888' 
   },
-  nestedMenu: { paddingLeft: '12px', display: 'flex', flexDirection: 'column', gap: '4px' },
-  nestedLink: { textDecoration: 'none', color: '#94a3b8', fontSize: '13px', padding: '4px 0' },
+  nestedMenu: { paddingLeft: '12px', display: 'flex', flexDirection: 'column', gap: '2px' },
+  nestedLink: { textDecoration: 'none', color: '#666666', fontSize: '12px', padding: '4px 0' },
   logoutTrigger: { 
     background: 'none', 
     border: 'none', 
@@ -407,12 +410,14 @@ const styles = {
     flex: 1, 
     display: 'flex', 
     flexDirection: 'column', 
-    padding: '48px 60px', 
-    transition: 'padding-left 0.3s ease' 
+    padding: '60px 80px', 
+    transition: 'padding-left 0.3s ease',
+    position: 'relative',
+    zIndex: 1
   },
-  headerSection: { marginBottom: '40px' },
-  pageTitle: { fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subText: { color: '#64748b', fontSize: '14px', marginTop: '4px' },
+  headerSection: { marginBottom: '40px', paddingBottom: '32px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' },
+  pageTitle: { fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.02em' },
+  subText: { color: '#888888', fontSize: '14px', marginTop: '8px', fontWeight: 400 },
 
   // --- DASHBOARD LAYOUT ---
   dashboardLayout: { 
@@ -422,28 +427,30 @@ const styles = {
     alignItems: 'start' 
   },
   glassCard: { 
-    background: '#ffffff', 
-    border: '1px solid #e2e8f0', 
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.08)', 
     padding: '40px', 
-    borderRadius: '24px', 
+    borderRadius: '16px', 
     display: 'flex', 
     flexDirection: 'column', 
     gap: '24px' 
   },
   uploadZone: { 
-    border: '2px dashed #e2e8f0', 
-    borderRadius: '20px', 
+    border: '2px dashed rgba(255, 255, 255, 0.12)', 
+    borderRadius: '12px', 
     padding: '40px 20px', 
     textAlign: 'center', 
-    transition: '0.2s' 
+    transition: '0.2s',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)'
   },
   uploadIcon: { fontSize: '2rem', marginBottom: '10px' },
-  uploadTitle: { fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' },
+  uploadTitle: { fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' },
   inputGroup: { marginTop: '10px' },
   label: { 
     fontSize: '13px', 
     fontWeight: 600, 
-    color: '#0f172a', 
+    color: '#ffffff', 
     marginBottom: '6px', 
     display: 'block' 
   },
@@ -451,34 +458,40 @@ const styles = {
     width: '100%', 
     minHeight: '100px', 
     padding: '12px', 
-    borderRadius: '12px', 
-    border: '1px solid #e2e8f0', 
+    borderRadius: '8px', 
+    border: '1px solid rgba(255, 255, 255, 0.08)', 
     fontSize: '13px', 
     outline: 'none', 
-    resize: 'vertical' 
+    resize: 'vertical',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    color: '#ffffff',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
   },
   primaryBtn: { 
     width: '100%', 
-    padding: '14px', 
-    borderRadius: '12px', 
-    background: '#800000', 
+    padding: '12px 16px', 
+    borderRadius: '8px', 
+    background: '#ffffff', 
     border: 'none', 
-    color: '#fff', 
-    fontWeight: 600, 
-    cursor: 'pointer' 
+    color: '#030303', 
+    fontWeight: 700, 
+    cursor: 'pointer',
+    fontSize: '13px',
+    letterSpacing: '-0.02em'
   },
   secondaryBtn: { 
-    background: '#f1f5f9', 
-    color: '#0f172a', 
-    border: 'none', 
+    background: 'transparent', 
+    color: '#ffffff', 
+    border: '1px solid rgba(255, 255, 255, 0.12)', 
     padding: '10px 20px', 
-    borderRadius: '10px', 
+    borderRadius: '8px', 
     fontWeight: 600, 
     cursor: 'pointer', 
-    marginTop: '10px' 
+    marginTop: '10px',
+    fontSize: '13px'
   },
-  loaderContainer: { height: '6px', background: '#e2e8f0', borderRadius: '10px', marginTop: '10px', overflow: 'hidden' },
-  loaderBar: { height: '100%', background: '#800000', transition: '0.4s' },
+  loaderContainer: { height: '6px', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '10px', marginTop: '10px', overflow: 'hidden' },
+  loaderBar: { height: '100%', background: '#ffffff', transition: '0.4s' },
 
   // --- RESULTS SECTION ---
   resultsSection: { display: 'flex', flexDirection: 'column', gap: '24px' },
@@ -487,16 +500,16 @@ const styles = {
     minWidth: '70px', 
     height: '70px', 
     borderRadius: '50%', 
-    border: '4px solid #800000', 
+    border: '4px solid #ffffff', 
     display: 'flex', 
     flexDirection: 'column', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    color: '#800000' 
+    color: '#ffffff' 
   },
   scoreNum: { fontSize: '1.4rem', fontWeight: 800 },
   scorePct: { fontSize: '0.7rem', fontWeight: 700 },
-  cardHeading: { fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#0f172a' },
+  cardHeading: { fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#ffffff' },
   summaryText: { fontSize: '13px', color: '#64748b', marginTop: '4px' },
   statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '10px' },
   statBox: { 

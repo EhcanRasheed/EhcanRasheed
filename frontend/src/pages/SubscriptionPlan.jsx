@@ -136,48 +136,48 @@ export default function SubscriptionPlan() {
 }
 
 const styles = {
-  workspace: { display: 'flex', minHeight: '100vh', width: '100vw', background: '#f8fafc', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' },
+  workspace: { display: 'flex', minHeight: '100vh', width: '100vw', background: '#030303', fontFamily: 'system-ui, -apple-system, sans-serif', overflowX: 'hidden', position: 'relative' },
   
-  navbarTriggerLine: { position: 'fixed', left: 0, top: 0, bottom: 0, width: '12px', zIndex: 150, background: '#800000', cursor: 'pointer' },
+  navbarTriggerLine: { position: 'fixed', left: 0, top: 0, bottom: 0, width: '8px', zIndex: 150, background: 'rgba(255, 255, 255, 0.08)', cursor: 'pointer' },
   
-  sidebar: { background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '32px 24px 200px 24px', position: 'fixed', left: 0, top: 0, height: '100vh', zIndex: 200, transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease', overflow: 'hidden' },
+  sidebar: { background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', padding: '32px 24px 200px 24px', position: 'fixed', left: 0, top: 0, height: '100vh', zIndex: 200, transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease', overflow: 'hidden' },
   
   sidebarHeader: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px', whiteSpace: 'nowrap', cursor: 'pointer' },
-  logoBox: { minWidth: '34px', height: '34px', background: '#0f172a', borderRadius: '8px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 },
-  brandName: { fontWeight: 700, fontSize: '1.2rem', color: '#0f172a' },
+  logoBox: { minWidth: '40px', height: '40px', background: '#ffffff', borderRadius: '8px', color: '#030303', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 },
+  brandName: { fontWeight: 700, fontSize: '1rem', color: '#ffffff' },
   
-  sideNav: { display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, whiteSpace: 'nowrap' },
-  sideNavLink: { textDecoration: 'none', color: '#64748b', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 500 },
-  sideNavLinkActive: { textDecoration: 'none', color: '#0f172a', background: '#f1f5f9', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600 },
-  accountTabTrigger: { cursor: 'pointer', color: '#64748b', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', fontWeight: 500 },
-  nestedMenu: { display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '24px', marginBottom: '8px', borderLeft: '2px solid #f1f5f9', marginLeft: '16px' },
-  nestedLink: { textDecoration: 'none', color: '#94a3b8', padding: '8px 12px', fontSize: '13px' },
-  nestedLinkActive: { textDecoration: 'none', color: '#800000', padding: '8px 12px', fontSize: '13px', fontWeight: 600 },
+  sideNav: { display: 'flex', flexDirection: 'column', gap: '2px', flex: 1, whiteSpace: 'nowrap' },
+  sideNavLink: { textDecoration: 'none', color: '#888888', padding: '10px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500 },
+  sideNavLinkActive: { textDecoration: 'none', color: '#ffffff', background: 'rgba(255, 255, 255, 0.08)', padding: '10px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.12)' },
+  accountTabTrigger: { cursor: 'pointer', color: '#888888', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontWeight: 500 },
+  nestedMenu: { display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '16px', marginBottom: '8px', borderLeft: '1px solid rgba(255, 255, 255, 0.08)', marginLeft: '12px' },
+  nestedLink: { textDecoration: 'none', color: '#666666', padding: '8px 8px', fontSize: '12px' },
+  nestedLinkActive: { textDecoration: 'none', color: '#ffffff', padding: '8px 8px', fontSize: '12px', fontWeight: 600 },
   
-  premiumDivider: { fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '32px', marginBottom: '8px', paddingLeft: '16px' },
-  premiumLink: { textDecoration: 'none', color: '#800000', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff5f5' },
-  badge: { fontSize: '10px', background: '#800000', color: '#fff', padding: '2px 6px', borderRadius: '4px' },
+  premiumDivider: { fontSize: '10px', fontWeight: 700, color: '#555555', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '24px', marginBottom: '8px', paddingLeft: '12px' },
+  premiumLink: { textDecoration: 'none', color: '#ffffff', padding: '10px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)' },
+  badge: { fontSize: '9px', background: '#ffffff', color: '#030303', padding: '2px 6px', borderRadius: '3px' },
   
-  logoutTrigger: { width: '100%', background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', color: '#dc2626', fontWeight: 600, fontSize: '14px', marginTop: '8px', textAlign: 'left' },
+  logoutTrigger: { width: '100%', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px 12px', borderRadius: '6px', cursor: 'pointer', color: '#ef4444', fontWeight: 600, fontSize: '13px', marginTop: '8px', textAlign: 'left' },
   
-  mainContent: { flex: 1, padding: '48px 60px', display: 'flex', flexDirection: 'column', transition: 'padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)' },
-  topBar: { display: 'flex', justifyContent: 'space-between', marginBottom: '32px' },
-  pageTitle: { fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subText: { color: '#64748b', fontSize: '14px', marginTop: '4px' },
+  mainContent: { flex: 1, padding: '60px 80px', display: 'flex', flexDirection: 'column', transition: 'padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)', position: 'relative', zIndex: 1 },
+  topBar: { display: 'flex', justifyContent: 'space-between', marginBottom: '40px', paddingBottom: '32px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' },
+  pageTitle: { fontSize: '2.2rem', fontWeight: 800, color: '#ffffff', margin: 0, letterSpacing: '-0.02em' },
+  subText: { color: '#888888', fontSize: '14px', marginTop: '8px', fontWeight: 400 },
   
-  planCard: { background: '#fff', borderRadius: '24px', padding: '40px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px rgba(0,0,0,0.02)', maxWidth: '600px' },
-  planTitle: { fontSize: '1.5rem', fontWeight: 700, color: '#0f172a', marginBottom: '16px', marginTop: '12px' },
-  planDesc: { color: '#64748b', fontSize: '14px', lineHeight: '1.6', marginBottom: '32px' },
+  planCard: { background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '40px', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)', maxWidth: '600px' },
+  planTitle: { fontSize: '1.5rem', fontWeight: 700, color: '#ffffff', marginBottom: '16px', marginTop: '12px' },
+  planDesc: { color: '#888888', fontSize: '13px', lineHeight: '1.6', marginBottom: '32px', fontWeight: 400 },
   featuresList: { display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' },
-  featureItem: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', color: '#1e293b' },
-  checkmark: { color: '#16a34a', fontWeight: 700, fontSize: '18px' },
-  maroonBtn: { width: '100%', padding: '14px', borderRadius: '12px', background: '#800000', border: 'none', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: '16px' },
+  featureItem: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#ffffff' },
+  checkmark: { color: '#10b981', fontWeight: 700, fontSize: '18px' },
+  maroonBtn: { width: '100%', padding: '12px 16px', borderRadius: '8px', background: '#ffffff', border: 'none', color: '#030303', fontWeight: 700, cursor: 'pointer', fontSize: '13px', letterSpacing: '-0.02em' },
 
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 300 },
-  modal: { background: '#fff', padding: '40px', borderRadius: '24px', width: '380px', textAlign: 'center' },
-  modalTitle: { marginBottom: '12px', fontSize: '1.5rem', fontWeight: 800 },
-  modalText: { color: '#64748b', fontSize: '14px', marginBottom: '24px' },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(3, 3, 3, 0.6)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 300 },
+  modal: { background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.08)', padding: '40px', borderRadius: '16px', width: '380px', textAlign: 'center' },
+  modalTitle: { marginBottom: '12px', fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' },
+  modalText: { color: '#888888', fontSize: '13px', marginBottom: '24px', fontWeight: 400 },
   modalActions: { display: 'flex', gap: '12px' },
-  confirmBtn: { flex: 1, background: '#ef4444', color: '#fff', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' },
-  cancelBtn: { flex: 1, background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }
+  confirmBtn: { flex: 1, background: '#ef4444', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '13px' },
+  cancelBtn: { flex: 1, background: 'transparent', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', padding: '12px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }
 };

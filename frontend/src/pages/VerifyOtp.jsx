@@ -37,6 +37,7 @@ export default function VerifyOtp() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.auroraGlow}></div>
       <div style={styles.card}>
         <h2 style={styles.title}>Verify Your Account</h2>
         
@@ -80,14 +81,108 @@ export default function VerifyOtp() {
 }
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', fontFamily: 'Inter, sans-serif' },
-  card: { background: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' },
-  title: { margin: '0 0 10px', fontSize: '24px', fontWeight: 'bold' },
-  subtitle: { color: '#666', fontSize: '14px', marginBottom: '25px', lineHeight: '1.6' },
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '100vh',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    background: '#030303',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+
+  auroraGlow: {
+    position: 'absolute',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'rgba(79, 70, 229, 0.15)',
+    filter: 'blur(120px)',
+    pointerEvents: 'none',
+    top: '-200px',
+    right: '-200px',
+  },
+
+  card: {
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    padding: '48px',
+    borderRadius: '16px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+    width: '100%',
+    maxWidth: '420px',
+    textAlign: 'center',
+    position: 'relative',
+    zIndex: 10,
+  },
+
+  title: {
+    margin: '0 0 16px',
+    fontSize: '1.8rem',
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: '-0.02em',
+  },
+
+  subtitle: {
+    color: '#888888',
+    fontSize: '13px',
+    marginBottom: '32px',
+    lineHeight: '1.6',
+    fontWeight: 400,
+  },
+
   form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  otpInput: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', textAlign: 'center', fontSize: '28px', letterSpacing: '8px', fontWeight: 'bold' },
-  button: { padding: '15px', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' },
-  errorText: { color: '#ef4444', marginTop: '15px', fontSize: '14px', fontWeight: 'bold' },
-  footerText: { marginTop: '20px', fontSize: '12px', color: '#64748b' },
-  linkBtn: { background: 'none', border: 'none', color: '#800000', cursor: 'pointer', fontWeight: 'bold', padding: 0 }
+
+  otpInput: {
+    width: '100%',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    textAlign: 'center',
+    fontSize: '28px',
+    letterSpacing: '8px',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  },
+
+  button: {
+    padding: '12px 16px',
+    color: '#030303',
+    border: 'none',
+    borderRadius: '8px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    fontSize: '13px',
+    background: '#ffffff',
+    transition: 'all 0.2s ease',
+    letterSpacing: '-0.02em',
+  },
+
+  errorText: {
+    color: '#ef4444',
+    marginTop: '16px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    padding: '10px',
+    borderRadius: '8px',
+    border: '1px solid rgba(239, 68, 68, 0.2)',
+  },
+
+  footerText: { marginTop: '24px', fontSize: '12px', color: '#888888' },
+
+  linkBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#ffffff',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    padding: 0,
+    textDecoration: 'underline',
+  },
 };
