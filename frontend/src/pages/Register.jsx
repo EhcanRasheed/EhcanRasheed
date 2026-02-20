@@ -105,6 +105,7 @@ export default function Register() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.auroraGlow}></div>
       <div style={styles.formCard}>
         <div style={styles.header}>
           <div style={styles.logo}>HC</div>
@@ -223,20 +224,151 @@ export default function Register() {
 }
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#eef2f6', padding: '20px', fontFamily: "'Inter', sans-serif" },
-  formCard: { background: '#fff', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', width: '100%', maxWidth: '480px', border: '1px solid #e2e8f0' },
-  header: { textAlign: 'center', marginBottom: '32px' },
-  logo: { width: '40px', height: '40px', background: '#0f172a', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 800 },
-  title: { fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subtitle: { fontSize: '14px', color: '#64748b', marginTop: '4px' },
-  form: { display: 'flex', flexDirection: 'column', gap: '16px' },
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '100vh',
+    background: '#030303',
+    padding: '20px',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+
+  auroraGlow: {
+    position: 'absolute',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'rgba(79, 70, 229, 0.15)',
+    filter: 'blur(120px)',
+    pointerEvents: 'none',
+    top: '-200px',
+    right: '-200px',
+  },
+
+  formCard: {
+    background: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    padding: '48px',
+    borderRadius: '16px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+    width: '100%',
+    maxWidth: '420px',
+    position: 'relative',
+    zIndex: 10,
+  },
+
+  header: { textAlign: 'center', marginBottom: '40px' },
+
+  logo: {
+    width: '44px',
+    height: '44px',
+    background: '#ffffff',
+    color: '#030303',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 16px',
+    fontWeight: 800,
+    fontSize: '20px'
+  },
+
+  title: {
+    fontSize: '1.8rem',
+    fontWeight: 800,
+    color: '#ffffff',
+    margin: 0,
+    letterSpacing: '-0.02em'
+  },
+
+  subtitle: {
+    fontSize: '13px',
+    color: '#888888',
+    marginTop: '8px',
+    fontWeight: 400
+  },
+
+  form: { display: 'flex', flexDirection: 'column', gap: '18px' },
+
   inputGroup: { display: 'flex', flexDirection: 'column' },
-  label: { fontSize: '14px', fontWeight: 600, color: '#1e293b', marginBottom: '6px' },
-  input: { padding: '12px 16px', borderRadius: '12px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none', transition: 'border 0.2s' },
-  helpText: { marginTop: '6px', fontSize: '12px', color: '#64748b' },
-  submitBtn: { padding: '14px', borderRadius: '12px', border: 'none', color: '#fff', fontWeight: 700, fontSize: '16px', marginTop: '8px', transition: '0.3s' },
-  successBox: { padding: '12px', background: '#f0fdf4', color: '#16a34a', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #dcfce7' },
-  errorBox: { padding: '12px', background: '#fef2f2', color: '#ef4444', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #fee2e2' },
-  footerText: { textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#64748b' },
-  link: { color: '#800000', fontWeight: 700, textDecoration: 'none' }
+
+  label: {
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: '8px'
+  },
+
+  input: {
+    padding: '12px 14px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    fontSize: '13px',
+    outline: 'none',
+    transition: 'all 0.2s',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    color: '#ffffff',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  },
+
+  helpText: {
+    marginTop: '6px',
+    fontSize: '12px',
+    color: '#888888'
+  },
+
+  submitBtn: {
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: 'none',
+    color: '#030303',
+    backgroundColor: '#ffffff',
+    fontWeight: '700',
+    fontSize: '13px',
+    marginTop: '12px',
+    transition: 'all 0.2s',
+    cursor: 'pointer',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    letterSpacing: '-0.02em'
+  },
+
+  successBox: {
+    padding: '12px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    color: '#10b981',
+    borderRadius: '8px',
+    fontSize: '12px',
+    textAlign: 'center',
+    marginBottom: '20px',
+    border: '1px solid rgba(16, 185, 129, 0.2)'
+  },
+
+  errorBox: {
+    padding: '12px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    color: '#ef4444',
+    borderRadius: '8px',
+    fontSize: '12px',
+    textAlign: 'center',
+    marginBottom: '20px',
+    border: '1px solid rgba(239, 68, 68, 0.2)'
+  },
+
+  footerText: {
+    textAlign: 'center',
+    marginTop: '24px',
+    fontSize: '13px',
+    color: '#888888'
+  },
+
+  link: {
+    color: '#ffffff',
+    fontWeight: '700',
+    textDecoration: 'none',
+    marginLeft: '4px'
+  }
 };

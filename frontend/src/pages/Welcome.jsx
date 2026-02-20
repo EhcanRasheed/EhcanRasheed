@@ -7,119 +7,150 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: '#eef2f6',
+    background: '#030303',
     padding: '20px',
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    position: 'relative',
+    overflow: 'hidden',
   },
+
+  auroraGlow: {
+    position: 'absolute',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'rgba(79, 70, 229, 0.15)',
+    filter: 'blur(120px)',
+    pointerEvents: 'none',
+    top: '-200px',
+    right: '-200px',
+  },
+
   content: {
     textAlign: 'center',
-    backgroundColor: 'white',
-    borderRadius: '24px',
-    padding: '60px 40px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
-    maxWidth: '1000px', 
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: '20px',
+    padding: '80px 60px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+    maxWidth: '1100px', 
     width: '100%',
-    border: '1px solid #e2e8f0',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    position: 'relative',
+    zIndex: 10,
   },
+
   logoBox: {
     width: 60,
     height: 60,
-    background: '#0f172a',
-    borderRadius: '16px',
-    color: '#fff',
+    background: '#ffffff',
+    borderRadius: '12px',
+    color: '#030303',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 800,
     fontSize: '24px',
-    margin: '0 auto 24px',
-    boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.2)',
+    margin: '0 auto 32px',
   },
+
   title: {
-    fontSize: '42px',
+    fontSize: '3.2rem',
     fontWeight: 800,
-    color: '#0f172a',
-    marginBottom: '15px',
-    letterSpacing: '-1px',
+    color: '#ffffff',
+    marginBottom: '20px',
+    letterSpacing: '-0.02em',
   },
+
   brandHighlight: {
-    color: '#800000',
+    color: '#ffffff',
   },
+
   subtitle: {
-    fontSize: '18px',
-    color: '#475569',
-    marginBottom: '40px',
+    fontSize: '16px',
+    color: '#888888',
+    marginBottom: '60px',
     lineHeight: '1.6',
-    fontWeight: 500,
+    fontWeight: 400,
   },
+
   featuresGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: '20px',
-    margin: '30px 0',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '24px',
+    margin: '40px 0',
   },
+
   feature: {
-    padding: '24px',
-    borderRadius: '16px',
-    background: '#f8fafc',
-    border: '1px solid #f1f5f9',
+    padding: '28px',
+    borderRadius: '12px',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'transform 0.2s ease',
+    transition: 'all 0.3s ease',
   },
+
   hireEaseFeature: {
-    padding: '24px',
-    borderRadius: '16px',
-    background: '#fff',
-    border: '2px solid #800000',
+    padding: '28px',
+    borderRadius: '12px',
+    background: 'rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 10px 15px -3px rgba(128, 0, 0, 0.1)',
   },
+
   featureTitle: {
-    fontSize: '13px',
-    color: '#0f172a',
-    fontWeight: '800',
+    fontSize: '12px',
+    color: '#ffffff',
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    marginBottom: '8px',
+    letterSpacing: '0.05em',
+    marginBottom: '10px',
     display: 'block'
   },
+
   featureDesc: {
     fontSize: '13px',
-    color: '#64748b',
-    lineHeight: '1.5'
+    color: '#888888',
+    lineHeight: '1.6',
+    fontWeight: 400,
   },
+
   buttonContainer: {
     display: 'flex',
     gap: '16px',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginTop: '40px',
+    marginTop: '60px',
   },
+
   primaryButton: {
-    padding: '16px 48px',
-    fontSize: '16px',
+    padding: '14px 48px',
+    fontSize: '14px',
     fontWeight: '700',
     border: 'none',
-    borderRadius: '12px',
+    borderRadius: '8px',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    background: '#800000',
-    color: '#fff',
+    transition: 'all 0.2s ease',
+    background: '#ffffff',
+    color: '#030303',
+    letterSpacing: '-0.02em',
   },
+
   secondaryButton: {
-    padding: '16px 48px',
-    fontSize: '16px',
+    padding: '14px 48px',
+    fontSize: '14px',
     fontWeight: '700',
-    border: '2px solid #e2e8f0',
-    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    borderRadius: '8px',
     cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    background: '#fff',
-    color: '#0f172a',
+    transition: 'all 0.2s ease',
+    background: 'transparent',
+    color: '#ffffff',
+    letterSpacing: '-0.02em',
   },
 };
 
@@ -129,6 +160,7 @@ export default function Welcome() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.auroraGlow}></div>
       <div style={styles.content}>
         <div style={styles.logoBox}>HC</div>
         
@@ -142,7 +174,17 @@ export default function Welcome() {
 
         <div style={styles.featuresGrid}>
           {/* Module 1: Resume Analysis */}
-          <div style={styles.feature}>
+          <div 
+            style={{
+              ...styles.feature,
+              ...(hoveredBtn === 'feature1' && {
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderColor: 'rgba(255, 255, 255, 0.12)',
+              })
+            }}
+            onMouseEnter={() => setHoveredBtn('feature1')}
+            onMouseLeave={() => setHoveredBtn(null)}
+          >
             <span style={styles.featureTitle}>Resume Lab</span>
             <span style={styles.featureDesc}>
               Precision structural audits and keyword optimization to outperform automated ATS filters.
@@ -150,7 +192,17 @@ export default function Welcome() {
           </div>
 
           {/* Module 2: Chatbot */}
-          <div style={styles.feature}>
+          <div 
+            style={{
+              ...styles.feature,
+              ...(hoveredBtn === 'feature2' && {
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderColor: 'rgba(255, 255, 255, 0.12)',
+              })
+            }}
+            onMouseEnter={() => setHoveredBtn('feature2')}
+            onMouseLeave={() => setHoveredBtn(null)}
+          >
             <span style={styles.featureTitle}>Interview Chatbot</span>
             <span style={styles.featureDesc}>
               Interact with a focused AI assistant for general interview guidance and technical logic practice.
@@ -158,7 +210,17 @@ export default function Welcome() {
           </div>
 
           {/* Module 3: Interviews */}
-          <div style={styles.feature}>
+          <div 
+            style={{
+              ...styles.feature,
+              ...(hoveredBtn === 'feature3' && {
+                background: 'rgba(255, 255, 255, 0.04)',
+                borderColor: 'rgba(255, 255, 255, 0.12)',
+              })
+            }}
+            onMouseEnter={() => setHoveredBtn('feature3')}
+            onMouseLeave={() => setHoveredBtn(null)}
+          >
             <span style={styles.featureTitle}>Formal Interviews</span>
             <span style={styles.featureDesc}>
               High-stakes, interactive AI environments designed to build authentic, role-specific confidence.
@@ -166,13 +228,23 @@ export default function Welcome() {
           </div>
 
           {/* Module 4: Hire Ease */}
-          <div style={styles.hireEaseFeature}>
+          <div 
+            style={{
+              ...styles.hireEaseFeature,
+              ...(hoveredBtn === 'feature4' && {
+                background: 'rgba(255, 255, 255, 0.06)',
+                borderColor: 'rgba(255, 255, 255, 0.16)',
+              })
+            }}
+            onMouseEnter={() => setHoveredBtn('feature4')}
+            onMouseLeave={() => setHoveredBtn(null)}
+          >
             <span 
               style={{
                 ...styles.featureTitle, 
-                color: '#800000', 
+                color: '#ffffff', 
                 fontWeight: '900', 
-                fontSize: '14px'
+                fontSize: '12px'
               }}
             >
               Hire Ease
@@ -187,8 +259,7 @@ export default function Welcome() {
           <button
             style={{
               ...styles.primaryButton,
-              background: hoveredBtn === 'login' ? '#600000' : '#800000',
-              transform: hoveredBtn === 'login' ? 'translateY(-2px)' : 'none'
+              background: hoveredBtn === 'login' ? '#f5f5f5' : '#ffffff',
             }}
             onMouseEnter={() => setHoveredBtn('login')}
             onMouseLeave={() => setHoveredBtn(null)}
@@ -200,9 +271,8 @@ export default function Welcome() {
           <button
             style={{
               ...styles.secondaryButton,
-              borderColor: hoveredBtn === 'register' ? '#0f172a' : '#e2e8f0',
-              background: hoveredBtn === 'register' ? '#f8fafc' : '#fff',
-              transform: hoveredBtn === 'register' ? 'translateY(-2px)' : 'none'
+              borderColor: hoveredBtn === 'register' ? 'rgba(255, 255, 255, 0.20)' : 'rgba(255, 255, 255, 0.12)',
+              background: hoveredBtn === 'register' ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
             }}
             onMouseEnter={() => setHoveredBtn('register')}
             onMouseLeave={() => setHoveredBtn(null)}

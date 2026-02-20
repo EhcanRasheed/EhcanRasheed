@@ -8,128 +8,174 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: '#eef2f6', // Matches Dashboard background
+    background: '#030303',
     padding: '20px',
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    position: 'relative',
+    overflow: 'hidden',
   },
+
+  auroraGlow: {
+    position: 'absolute',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'rgba(79, 70, 229, 0.15)',
+    filter: 'blur(120px)',
+    pointerEvents: 'none',
+    top: '-200px',
+    right: '-200px',
+  },
+
   form: {
-    backgroundColor: 'white',
-    borderRadius: '24px',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    backdropFilter: 'blur(20px)',
+    borderRadius: '16px',
     padding: '48px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
-    maxWidth: '440px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+    maxWidth: '420px',
     width: '100%',
-    border: '1px solid #e2e8f0',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    position: 'relative',
+    zIndex: 10,
   },
+
   logoSection: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: '32px',
+    marginBottom: '40px',
   },
+
   logoBox: {
     width: 44,
     height: 44,
-    background: '#0f172a',
-    borderRadius: '12px',
-    color: '#fff',
+    background: '#ffffff',
+    borderRadius: '8px',
+    color: '#030303',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 800,
     fontSize: '20px',
-    marginBottom: '12px',
+    marginBottom: '16px',
   },
+
   title: {
-    fontSize: '28px',
+    fontSize: '1.8rem',
     fontWeight: 800,
-    color: '#0f172a',
+    color: '#ffffff',
     margin: 0,
     textAlign: 'center',
+    letterSpacing: '-0.02em',
   },
+
   subtitle: {
-    fontSize: '14px',
-    color: '#64748b',
+    fontSize: '13px',
+    color: '#888888',
     marginTop: '8px',
     textAlign: 'center',
+    fontWeight: 400,
   },
+
   inputGroup: {
     marginBottom: '20px',
   },
+
   label: {
     display: 'block',
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#ffffff',
     marginBottom: '8px',
   },
+
   input: {
     width: '100%',
-    padding: '12px 16px',
-    fontSize: '14px',
-    border: '1px solid #d1d5db',
-    borderRadius: '12px',
+    padding: '12px 14px',
+    fontSize: '13px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
     boxSizing: 'border-box',
     transition: 'all 0.2s ease',
-    color: '#0f172a',
-    backgroundColor: '#fff',
+    color: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     outline: 'none',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
   },
+
+  inputFocus: {
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+
   button: {
     width: '100%',
-    padding: '14px',
-    fontSize: '16px',
+    padding: '12px 16px',
+    fontSize: '13px',
     fontWeight: '700',
-    background: '#800000', // Signature Maroon
-    color: '#fff',
+    background: '#ffffff',
+    color: '#030303',
     border: 'none',
-    borderRadius: '12px',
+    borderRadius: '8px',
     cursor: 'pointer',
     marginTop: '12px',
-    transition: 'all 0.3s ease',
+    transition: 'all 0.2s ease',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    letterSpacing: '-0.02em',
   },
+
   buttonHover: {
-    background: '#600000',
-    transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(128, 0, 0, 0.2)',
+    background: '#f5f5f5',
   },
+
   buttonDisabled: {
-    backgroundColor: '#cbd5e1',
+    backgroundColor: '#555555',
     cursor: 'not-allowed',
+    color: '#888888',
   },
+
   errorMsg: {
     color: '#ef4444',
-    fontSize: '14px',
+    fontSize: '12px',
     marginBottom: '20px',
     padding: '12px',
-    backgroundColor: '#fef2f2',
-    borderRadius: '10px',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: '8px',
     textAlign: 'center',
-    border: '1px solid #fee2e2',
+    border: '1px solid rgba(239, 68, 68, 0.2)',
   },
+
   linksContainer: {
     marginTop: '24px',
     display: 'flex',
-    gap: '8px',
+    gap: '4px',
     justifyContent: 'center',
     alignItems: 'center',
-    fontSize: '13px',
+    fontSize: '12px',
   },
+
   link: {
-    color: '#64748b',
+    color: '#888888',
     textDecoration: 'none',
-    fontWeight: '600',
+    fontWeight: '400',
     cursor: 'pointer',
     transition: 'color 0.2s ease',
   },
+
+  linkHover: {
+    color: '#ffffff',
+  },
+
   maroonLink: {
-    color: '#800000',
+    color: '#ffffff',
     textDecoration: 'none',
-    fontWeight: '700',
+    fontWeight: '600',
     cursor: 'pointer',
   },
+
   divider: {
-    color: '#cbd5e1',
+    color: '#666666',
   },
 };
 
@@ -225,6 +271,7 @@ export default function Login() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.auroraGlow}></div>
       <div style={styles.form}>
         <div style={styles.logoSection}>
           <div style={styles.logoBox}>HC</div>
