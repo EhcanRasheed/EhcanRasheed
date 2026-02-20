@@ -1,0 +1,14 @@
+import { IsString, IsEmail, MinLength, IsOptional, Matches } from 'class-validator';
+export class CreateAdminUserDto {
+@IsString() fullName: string;
+@IsEmail() email: string;
+@IsString()
+@MinLength(7, {
+  message: 'Password must be at least 7 characters and include letters and numbers.',
+})
+@Matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, {
+  message: 'Password must include letters and numbers for security.',
+})
+password: string;
+@IsOptional() phoneNumber?: string;
+}
