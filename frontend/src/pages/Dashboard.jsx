@@ -185,15 +185,15 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     width: '100%',
-    background: '#f8fafc',
-    color: '#1e293b',
+    color: '#d1d5db',
     fontFamily: "'Inter', sans-serif",
   },
 
   sidebar: {
     width: '280px',
-    background: '#ffffff',
-    borderRight: '1px solid #e2e8f0',
+    background: 'rgba(26, 26, 26, 0.5)',
+    backdropFilter: 'blur(12px)',
+    borderRight: '1px solid rgba(255, 255, 255, 0.08)',
     display: 'flex',
     flexDirection: 'column',
     padding: '32px 24px 200px 24px',
@@ -214,7 +214,7 @@ const styles = {
   logoBox: {
     width: 34,
     height: 34,
-    background: '#0f172a',
+    background: 'linear-gradient(135deg, #FF8C00 0%, #A4C639 100%)',
     borderRadius: '8px',
     color: '#fff',
     display: 'flex',
@@ -226,7 +226,7 @@ const styles = {
   brandName: {
     fontWeight: 700,
     fontSize: '1.2rem',
-    color: '#0f172a',
+    color: '#d1d5db',
   },
 
   sideNav: {
@@ -238,26 +238,28 @@ const styles = {
 
   sideNavLink: {
     textDecoration: 'none',
-    color: '#64748b',
+    color: '#9ca3af',
     padding: '12px 16px',
     borderRadius: '8px',
     fontSize: '14px',
     fontWeight: 500,
+    transition: 'all 0.2s ease',
   },
 
   sideNavLinkActive: {
     textDecoration: 'none',
-    color: '#0f172a',
-    background: '#f1f5f9',
+    color: '#A4C639',
+    background: 'rgba(164, 198, 57, 0.12)',
     padding: '12px 16px',
     borderRadius: '8px',
     fontSize: '14px',
     fontWeight: 600,
+    border: '1px solid rgba(164, 198, 57, 0.2)',
   },
 
   accountTabTrigger: {
     cursor: 'pointer',
-    color: '#64748b',
+    color: '#9ca3af',
     padding: '12px 16px',
     display: 'flex',
     justifyContent: 'space-between',
@@ -272,13 +274,13 @@ const styles = {
     gap: '2px',
     paddingLeft: '24px',
     marginBottom: '8px',
-    borderLeft: '2px solid #f1f5f9',
+    borderLeft: '2px solid rgba(164, 198, 57, 0.2)',
     marginLeft: '16px',
   },
 
   nestedLink: {
     textDecoration: 'none',
-    color: '#94a3b8',
+    color: '#6b7280',
     padding: '8px 12px',
     fontSize: '13px',
   },
@@ -286,7 +288,7 @@ const styles = {
   premiumDivider: {
     fontSize: '11px',
     fontWeight: 700,
-    color: '#94a3b8',
+    color: '#6b7280',
     textTransform: 'uppercase',
     letterSpacing: '1px',
     marginTop: '32px',
@@ -296,7 +298,7 @@ const styles = {
 
   premiumLink: {
     textDecoration: 'none',
-    color: '#800000',
+    color: '#FF8C00',
     padding: '12px 16px',
     borderRadius: '8px',
     fontSize: '14px',
@@ -304,25 +306,26 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    background: '#fff5f5',
+    background: 'rgba(255, 140, 0, 0.12)',
+    border: '1px solid rgba(255, 140, 0, 0.2)',
   },
 
   badge: {
     fontSize: '10px',
-    background: '#800000',
-    color: '#fff',
+    background: '#FF8C00',
+    color: '#1a1a1a',
     padding: '2px 6px',
     borderRadius: '4px',
   },
 
   logoutTrigger: {
     width: '100%',
-    background: '#fef2f2',
-    border: '1px solid #fecaca',
+    background: 'rgba(239, 68, 68, 0.12)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
     padding: '10px 12px',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: '#dc2626',
+    color: '#ef4444',
     fontWeight: 600,
     fontSize: '14px',
     marginTop: '8px',
@@ -347,12 +350,12 @@ const styles = {
   pageTitle: {
     fontSize: '1.8rem',
     fontWeight: 800,
-    color: '#0f172a',
+    color: '#d1d5db',
     margin: 0,
   },
 
   subText: {
-    color: '#64748b',
+    color: '#9ca3af',
     fontSize: '14px',
     marginTop: '4px',
   },
@@ -364,30 +367,34 @@ const styles = {
   },
 
   card: {
-    background: '#ffffff',
-    border: '1px solid #e2e8f0',
+    background: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(164, 198, 57, 0.2)',
     padding: '32px',
     borderRadius: '24px',
     cursor: 'pointer',
+    transition: 'all 0.3s ease',
   },
 
   enterpriseCard: {
-    background: '#ffffff',
-    border: '1px solid #e2e8f0',
-    borderTop: '6px solid #800000',
+    background: 'rgba(255, 140, 0, 0.08)',
+    backdropFilter: 'blur(12px)',
+    border: '1.5px solid rgba(255, 140, 0, 0.4)',
+    borderTop: '2px solid rgba(255, 140, 0, 0.6)',
     padding: '32px',
     borderRadius: '24px',
+    transition: 'all 0.3s ease',
   },
 
   cardTitle: {
     fontSize: '1.25rem',
     fontWeight: 700,
-    color: '#0f172a',
+    color: '#d1d5db',
     marginBottom: '12px',
   },
 
   cardDesc: {
-    color: '#64748b',
+    color: '#9ca3af',
     fontSize: '14px',
     lineHeight: 1.6,
     marginBottom: '24px',
@@ -397,17 +404,18 @@ const styles = {
     width: '100%',
     padding: '12px',
     borderRadius: '12px',
-    background: '#800000',
+    background: '#FF8C00',
     border: 'none',
-    color: '#fff',
+    color: '#1a1a1a',
     fontWeight: 600,
     cursor: 'pointer',
+    transition: 'all 0.2s ease',
   },
 
   footer: {
     marginTop: '80px',
     paddingTop: '60px',
-    borderTop: '1px solid #e2e8f0',
+    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
   },
 
   footerGrid: {
@@ -431,7 +439,7 @@ const styles = {
   logoBoxSmall: {
     width: 30,
     height: 30,
-    background: '#0f172a',
+    background: 'linear-gradient(135deg, #FF8C00 0%, #A4C639 100%)',
     borderRadius: '6px',
     color: '#fff',
     display: 'flex',
@@ -444,11 +452,11 @@ const styles = {
   footerBrandName: {
     fontWeight: 700,
     fontSize: '1.1rem',
-    color: '#0f172a',
+    color: '#d1d5db',
   },
 
   footerDescription: {
-    color: '#64748b',
+    color: '#9ca3af',
     fontSize: '14px',
     lineHeight: 1.6,
     maxWidth: '300px',
@@ -463,23 +471,23 @@ const styles = {
   footerHeader: {
     fontSize: '14px',
     fontWeight: 700,
-    color: '#0f172a',
+    color: '#d1d5db',
     marginBottom: '8px',
     textTransform: 'uppercase',
   },
 
   footerLink: {
     textDecoration: 'none',
-    color: '#64748b',
+    color: '#9ca3af',
     fontSize: '14px',
     cursor: 'pointer',
   },
 
   copyrightSection: {
     padding: '24px 0',
-    borderTop: '1px solid #f1f5f9',
+    borderTop: '1px solid rgba(255, 255, 255, 0.05)',
     textAlign: 'center',
-    color: '#94a3b8',
+    color: '#6b7280',
     fontSize: '13px',
   },
 
@@ -489,8 +497,8 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    background: 'rgba(15, 23, 42, 0.6)',
-    backdropFilter: 'blur(4px)',
+    background: 'rgba(15, 15, 15, 0.7)',
+    backdropFilter: 'blur(6px)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -498,7 +506,9 @@ const styles = {
   },
 
   modal: {
-    background: '#fff',
+    background: 'rgba(26, 26, 26, 0.8)',
+    backdropFilter: 'blur(16px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     padding: '40px',
     borderRadius: '24px',
     width: '380px',
@@ -509,10 +519,11 @@ const styles = {
     marginBottom: '12px',
     fontSize: '1.5rem',
     fontWeight: 800,
+    color: '#d1d5db',
   },
 
   modalText: {
-    color: '#64748b',
+    color: '#9ca3af',
     fontSize: '14px',
     marginBottom: '24px',
   },
@@ -535,8 +546,9 @@ const styles = {
 
   cancelBtn: {
     flex: 1,
-    background: '#f1f5f9',
-    border: '1px solid #e2e8f0',
+    background: 'rgba(164, 198, 57, 0.15)',
+    border: '1px solid rgba(164, 198, 57, 0.3)',
+    color: '#A4C639',
     padding: '14px',
     borderRadius: '12px',
     fontWeight: 600,

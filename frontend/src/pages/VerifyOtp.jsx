@@ -43,7 +43,7 @@ export default function VerifyOtp() {
         {/* ✅ Displaying the email so the user knows where the code went */}
         <p style={styles.subtitle}>
           Enter the 6-digit code sent to <br/>
-          <strong style={{ color: '#800000' }}>{email || 'your email'}</strong>
+          <strong style={{ color: '#FF8C00' }}>{email || 'your email'}</strong>
         </p>
 
         <form onSubmit={handleVerify} style={styles.form}>
@@ -81,13 +81,13 @@ export default function VerifyOtp() {
 
 const styles = {
   container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', fontFamily: 'Inter, sans-serif' },
-  card: { background: '#fff', padding: '40px', borderRadius: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' },
-  title: { margin: '0 0 10px', fontSize: '24px', fontWeight: 'bold' },
-  subtitle: { color: '#666', fontSize: '14px', marginBottom: '25px', lineHeight: '1.6' },
+  card: { background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(16px) saturate(125%)', padding: '40px', borderRadius: '15px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.02)', width: '100%', maxWidth: '400px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.12)' },
+  title: { margin: '0 0 10px', fontSize: '24px', fontWeight: 'bold', color: '#d1d5db' },
+  subtitle: { color: '#9ca3af', fontSize: '14px', marginBottom: '25px', lineHeight: '1.6' },
   form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  otpInput: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #ccc', textAlign: 'center', fontSize: '28px', letterSpacing: '8px', fontWeight: 'bold' },
-  button: { padding: '15px', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' },
+  otpInput: { width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'center', fontSize: '28px', letterSpacing: '8px', fontWeight: 'bold', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#d1d5db', backdropFilter: 'blur(8px)' },
+  button: { padding: '15px', color: '#1a1a1a', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px', background: '#FF8C00' },
   errorText: { color: '#ef4444', marginTop: '15px', fontSize: '14px', fontWeight: 'bold' },
-  footerText: { marginTop: '20px', fontSize: '12px', color: '#64748b' },
-  linkBtn: { background: 'none', border: 'none', color: '#800000', cursor: 'pointer', fontWeight: 'bold', padding: 0 }
+  footerText: { marginTop: '20px', fontSize: '12px', color: '#9ca3af' },
+  linkBtn: { background: 'none', border: 'none', color: '#FF8C00', cursor: 'pointer', fontWeight: 'bold', padding: 0 }
 };

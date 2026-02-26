@@ -164,7 +164,7 @@ export default function Register() {
               type="password"
               style={{
                 ...styles.input,
-                borderColor: showMatchError ? '#ef4444' : '#d1d5db'
+                borderColor: showMatchError ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255, 255, 255, 0.15)'
               }}
               placeholder="••••••••"
               value={formData.password}
@@ -181,7 +181,7 @@ export default function Register() {
               type="password"
               style={{
                 ...styles.input,
-                borderColor: showMatchError ? '#ef4444' : (formData.confirmPassword && passwordsMatch ? '#16a34a' : '#d1d5db')
+                borderColor: showMatchError ? 'rgba(239, 68, 68, 0.5)' : (formData.confirmPassword && passwordsMatch ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255, 255, 255, 0.15)')
               }}
               placeholder="••••••••"
               value={formData.confirmPassword}
@@ -192,7 +192,7 @@ export default function Register() {
             {formData.confirmPassword && (
               <span style={{ 
                 fontSize: '12px', 
-                color: passwordsMatch ? '#16a34a' : '#ef4444',
+                color: passwordsMatch ? '#22c55e' : '#ef4444',
                 marginTop: '4px',
                 display: 'block' 
               }}>
@@ -223,20 +223,20 @@ export default function Register() {
 }
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#eef2f6', padding: '20px', fontFamily: "'Inter', sans-serif" },
-  formCard: { background: '#fff', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', width: '100%', maxWidth: '480px', border: '1px solid #e2e8f0' },
+  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '20px', fontFamily: "'Inter', sans-serif" },
+  formCard: { background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(16px) saturate(125%)', padding: '40px', borderRadius: '24px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.02)', width: '100%', maxWidth: '480px', border: '1px solid rgba(255, 255, 255, 0.12)' },
   header: { textAlign: 'center', marginBottom: '32px' },
-  logo: { width: '40px', height: '40px', background: '#0f172a', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 800 },
-  title: { fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subtitle: { fontSize: '14px', color: '#64748b', marginTop: '4px' },
+  logo: { width: '40px', height: '40px', background: 'linear-gradient(135deg, #FF8C00 0%, #A4C639 100%)', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 800 },
+  title: { fontSize: '24px', fontWeight: 800, color: '#d1d5db', margin: 0 },
+  subtitle: { fontSize: '14px', color: '#9ca3af', marginTop: '4px' },
   form: { display: 'flex', flexDirection: 'column', gap: '16px' },
   inputGroup: { display: 'flex', flexDirection: 'column' },
-  label: { fontSize: '14px', fontWeight: 600, color: '#1e293b', marginBottom: '6px' },
-  input: { padding: '12px 16px', borderRadius: '12px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none', transition: 'border 0.2s' },
-  helpText: { marginTop: '6px', fontSize: '12px', color: '#64748b' },
-  submitBtn: { padding: '14px', borderRadius: '12px', border: 'none', color: '#fff', fontWeight: 700, fontSize: '16px', marginTop: '8px', transition: '0.3s' },
-  successBox: { padding: '12px', background: '#f0fdf4', color: '#16a34a', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #dcfce7' },
-  errorBox: { padding: '12px', background: '#fef2f2', color: '#ef4444', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #fee2e2' },
-  footerText: { textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#64748b' },
-  link: { color: '#800000', fontWeight: 700, textDecoration: 'none' }
+  label: { fontSize: '14px', fontWeight: 600, color: '#d1d5db', marginBottom: '6px' },
+  input: { padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '14px', outline: 'none', transition: 'border 0.2s', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#d1d5db', backdropFilter: 'blur(8px)' },
+  helpText: { marginTop: '6px', fontSize: '12px', color: '#9ca3af' },
+  submitBtn: { padding: '14px', borderRadius: '12px', border: 'none', color: '#1a1a1a', fontWeight: 700, fontSize: '16px', marginTop: '8px', transition: '0.3s' },
+  successBox: { padding: '12px', background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid rgba(34, 197, 94, 0.3)' },
+  errorBox: { padding: '12px', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid rgba(239, 68, 68, 0.3)' },
+  footerText: { textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#9ca3af' },
+  link: { color: '#FF8C00', fontWeight: 700, textDecoration: 'none' }
 };

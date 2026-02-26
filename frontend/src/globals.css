@@ -1,0 +1,169 @@
+/* ============================================
+   DESIGN SYSTEM - GLOBAL STYLES
+   ============================================ */
+
+/* Color Palette */
+:root {
+  /* Primary Colors */
+  --color-dark-charcoal: #1a1a1a;
+  --color-matte-black: #0f0f0f;
+  
+  /* Accent Colors */
+  --color-orange: #FF8C00;
+  --color-lime: #A4C639;
+  
+  /* Neutrals */
+  --color-gray-light: #d1d5db;
+  --color-gray-medium: #6b7280;
+  --color-gray-dark: #374151;
+  
+  /* Semantic Colors (kept for compatibility) */
+  --color-white: #ffffff;
+  --color-error: #ef4444;
+  --color-maroon: #800000;
+}
+
+/* ============================================
+   BASE & GLOBAL STYLES
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  /* Deep charcoal/matte black background */
+  background: radial-gradient(ellipse at top right, rgba(255, 140, 0, 0.05), rgba(164, 198, 57, 0.03)), 
+              linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+  color: #d1d5db;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.3px;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+h1 {
+  font-size: 2.625rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+p {
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ============================================
+   GLASS MORPHISM CARDS & SURFACES
+   ============================================ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+}
+
+.glass-card-elevated {
+  background: rgba(26, 26, 26, 0.4);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    inset 0 0 24px rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================
+   ACCENT UTILITIES
+   ============================================ */
+
+.accent-orange {
+  color: #FF8C00;
+}
+
+.accent-lime {
+  color: #A4C639;
+}
+
+.bg-accent-orange {
+  background-color: #FF8C00;
+}
+
+.bg-accent-lime {
+  background-color: #A4C639;
+}
+
+/* Subtle accent borders */
+.border-accent-orange {
+  border-color: rgba(255, 140, 0, 0.3);
+}
+
+.border-accent-lime {
+  border-color: rgba(164, 198, 57, 0.3);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 140, 0, 0.3);
+  border-radius: 5px;
+  border: 2px solid rgba(26, 26, 26, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 140, 0, 0.5);
+}
+
+/* ============================================
+   ROOT ELEMENT BACKGROUND
+   ============================================ */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at top right, rgba(255, 140, 0, 0.05), rgba(164, 198, 57, 0.03)), 
+              linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+}
