@@ -12,6 +12,7 @@ import { MailModule } from './mail/mail.module';
 import { InterviewModule } from './interview/interview.module';
 import { AnswerModule } from './answer/answer.module';
 import { ChatbotModule } from './chatbot/chatbot.module'; // ✅ Chatbot Added
+import { AdminModule } from './admin/admin.module'; // ✅ Admin Added
 
 @Module({
   imports: [
@@ -24,20 +25,39 @@ import { ChatbotModule } from './chatbot/chatbot.module'; // ✅ Chatbot Added
     // 2. TypeORM Connection with your custom fixes
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST') || '127.0.0.1', 
-        port: Number(config.get<number>('DB_PORT')) || 5432,
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_DATABASE'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Only for development
-        ssl: false,
-        extra: {
-          family: 4, // ✅ Forces IPv4 to ensure Auth works smoothly
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const dbUrl = config.get<string>('DATABASE_URL');
+        if (dbUrl) {
+          // Render / production: parse the connection string
+          const url = new URL(dbUrl);
+          return {
+            type: 'postgres' as const,
+            host: url.hostname,
+            port: Number(url.port) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.replace('/', ''),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            ssl: { rejectUnauthorized: false },
+          };
+        }
+        // Local development
+        return {
+          type: 'postgres' as const,
+          host: config.get<string>('DB_HOST') || '127.0.0.1',
+          port: Number(config.get<number>('DB_PORT')) || 5432,
+          username: config.get<string>('DB_USERNAME'),
+          password: config.get<string>('DB_PASSWORD'),
+          database: config.get<string>('DB_DATABASE'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: true,
+          ssl: false,
+          extra: {
+            family: 4,
+          },
+        };
+      },
     }),
 
     // 3. Feature Modules
@@ -50,6 +70,7 @@ import { ChatbotModule } from './chatbot/chatbot.module'; // ✅ Chatbot Added
     InterviewModule,
     AnswerModule,
     ChatbotModule, // ✅ Registered Chatbot
+    AdminModule,   // ✅ Registered Admin
   ],
 })
 export class AppModule {}

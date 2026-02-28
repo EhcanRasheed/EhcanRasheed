@@ -1,15 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+﻿import React, { useState, useRef } from 'react';
+import AppLayout from '../components/AppLayout';
 
 export default function Resume() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  
-  const [isNavbarVisible, setIsNavbarVisible] = useState(false);
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const chatEndRef = useRef(null);
+
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(0);
@@ -25,15 +20,14 @@ export default function Resume() {
   const [chatMessages, setChatMessages] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await fetch('http://localhost:3000/auth/logout', { method: 'POST', credentials: 'include' });
-    } finally {
-      logout();
-      localStorage.clear();
-      navigate('/login');
-    }
-  };
+  // Derived wizard phase
+  const phase = !file
+    ? 'upload'
+    : isAnalyzing
+      ? 'analyzing'
+      : analysisResult
+        ? 'results'
+        : 'configure';
 
   const onDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
   const onDragLeave = () => setIsDragging(false);
@@ -60,6 +54,16 @@ export default function Resume() {
     }
   };
 
+  const resetAnalysis = () => {
+    setFile(null);
+    setAnalysisResult(null);
+    setAnalysisStep(0);
+    setAnalysisError('');
+    setChatMessages([]);
+    setKeyText('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const startAnalysis = async () => {
     if (!file) return;
     if (!keyText.trim()) {
@@ -81,7 +85,7 @@ export default function Resume() {
     }, 1200);
 
     try {
-      const response = await fetch('http://localhost:3000/resume/analyze', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/resume/analyze`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -116,7 +120,7 @@ export default function Resume() {
     setIsChatLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/resume/chat', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/resume/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -140,464 +144,262 @@ export default function Resume() {
       setChatMessages((prev) => [...prev, { role: 'assistant', content: 'Sorry, I could not process that.' }]);
     } finally {
       setIsChatLoading(false);
+      setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     }
   };
 
+  const renderInline = (text) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+    return parts.map((part, i) => {
+      if (/^\*\*[^*]+\*\*$/.test(part)) {
+        return <strong key={i} className="resume-chat-bold">{part.slice(2, -2)}</strong>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
+  const renderMessageContent = (text) => {
+    if (!text) return null;
+
+    const lines = text.split('\n');
+    const elements = [];
+    let bulletBuffer = [];
+
+    const flushBullets = () => {
+      if (bulletBuffer.length === 0) return;
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="resume-chat-list">
+          {bulletBuffer.map((item, i) => (
+            <li key={i}>{renderInline(item)}</li>
+          ))}
+        </ul>
+      );
+      bulletBuffer = [];
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const bulletMatch = line.match(/^\s*(?:[-*\u2022]|\d+[.)]) \s*(.+)/);
+      if (bulletMatch) {
+        bulletBuffer.push(bulletMatch[1]);
+      } else {
+        flushBullets();
+        if (line.trim() === '') {
+          elements.push(<div key={`br-${i}`} style={{ height: '6px' }} />);
+        } else {
+          elements.push(
+            <p key={`p-${i}`} className="resume-chat-paragraph">{renderInline(line)}</p>
+          );
+        }
+      }
+    }
+    flushBullets();
+
+    return elements;
+  };
+
+  // Score ring SVG params
+  const radius = 46;
+  const circumference = 2 * Math.PI * radius;
+  const score = analysisResult?.overallScore || 0;
+  const scoreOffset = circumference - (score / 100) * circumference;
+  const scoreColor = score >= 80 ? '#3faa72' : score >= 60 ? '#eab308' : score >= 40 ? '#f97316' : '#dc4a4a';
+
   return (
-    <div style={styles.workspace}>
-      <div style={styles.navbarTriggerLine} onMouseEnter={() => setIsNavbarVisible(true)} />
+    <AppLayout activePage="resume" mainClassName="resume-wizard" mainStyle={null}>
+      <div className="resume-header">
+        <h1>Resume Lab</h1>
+        <p>Upload your resume, describe the target role, and get AI-powered insights.</p>
+      </div>
 
-      <aside 
-        style={{
-          ...styles.sidebar, 
-          width: isNavbarVisible ? '280px' : '0px',
-          visibility: isNavbarVisible ? 'visible' : 'hidden',
-          opacity: isNavbarVisible ? 1 : 0
-        }}
-        onMouseLeave={() => {
-          setIsNavbarVisible(false);
-          setIsAccountOpen(false);
-        }}
-      >
-        <div style={styles.sidebarHeader} onClick={() => navigate('/dashboard')}>
-          <div style={styles.logoBox}>HC</div>
-          <span style={styles.brandName}>HireCraft</span>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={handleFileSelect}
+        accept=".pdf"
+      />
+
+      {/* STEP 1: Upload */}
+      {phase === 'upload' && (
+        <div className="resume-step" key="upload">
+          <div
+            className={`resume-upload-hero ${isDragging ? 'dragging' : ''}`}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            onClick={() => fileInputRef.current.click()}
+          >
+            <div className="resume-upload-icon">☁️</div>
+            <h2 className="resume-upload-title">Drop your resume here</h2>
+            <p className="resume-upload-subtitle">or click anywhere in this area to browse</p>
+            <button
+              className="resume-browse-btn"
+              onClick={(e) => { e.stopPropagation(); fileInputRef.current.click(); }}
+            >
+              Browse Files
+            </button>
+            <p className="resume-upload-formats">Supports PDF files</p>
+          </div>
         </div>
+      )}
 
-        <nav style={styles.sideNav}>
-          <Link to="/dashboard" style={styles.sideNavLink}>Home</Link>
-          <Link to="/resume" style={styles.sideNavLinkActive}>Resume Lab</Link>
-          <Link to="/chatbot" style={styles.sideNavLink}>Chatbot</Link>
-          <Link to="/interview" style={styles.sideNavLink}>Interview Preparation</Link>
-
-          <div style={styles.accountTabTrigger} onClick={() => setIsAccountOpen(!isAccountOpen)}>
-            <span>Account</span>
-            <span style={{ transform: isAccountOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }}>▼</span>
+      {/* STEP 2: Configure */}
+      {phase === 'configure' && (
+        <div className="resume-step" key="configure">
+          <div className="resume-file-chip">
+            <div className="resume-file-chip-icon">📄</div>
+            <span className="resume-file-chip-name">{file?.name}</span>
+            <button
+              className="resume-file-chip-change"
+              onClick={() => fileInputRef.current.click()}
+            >
+              Change
+            </button>
           </div>
 
-          {isAccountOpen && (
-            <div style={styles.nestedMenu}>
-              <Link to="/change-username" style={styles.nestedLink}>Change Username</Link>
-              <Link to="/change-password" style={styles.nestedLink}>Change Password</Link>
-              <button style={styles.logoutTrigger} onClick={() => setShowLogoutModal(true)}>Sign Out</button>
-            </div>
-          )}
-        </nav>
-      </aside>
+          <div className="resume-job-section">
+            <label className="resume-job-label">Job Description / Target Role</label>
+            <textarea
+              className="resume-job-textarea"
+              placeholder="Paste the job description or describe the role you're targeting..."
+              value={keyText}
+              onChange={(e) => setKeyText(e.target.value)}
+            />
+          </div>
 
-      <main style={{ ...styles.mainContent, paddingLeft: isNavbarVisible ? '320px' : '80px' }}>
-        <div style={styles.headerSection}>
-          <h1 style={styles.pageTitle}>Resume Lab</h1>
-          <p style={styles.subText}>Tailor your profile for maximum impact.</p>
+          {analysisError && <div className="resume-error">{analysisError}</div>}
+
+          <button
+            className="resume-analyze-btn"
+            onClick={startAnalysis}
+            disabled={isAnalyzing}
+          >
+            Analyze Match
+          </button>
         </div>
+      )}
 
-        <div style={styles.dashboardLayout}>
-          <section style={styles.inputSection}>
-            <div style={styles.glassCard}>
-              <div 
-                style={{
-                  ...styles.uploadZone,
-                  backgroundColor: isDragging ? '#fff5f5' : 'transparent',
-                  borderColor: isDragging ? '#800000' : '#cbd5e1'
-                }}
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-              >
-                <div style={styles.uploadIcon}>{file ? '📄' : '☁️'}</div>
-                <h3 style={styles.uploadTitle}>{file ? file.name : 'Upload Resume'}</h3>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  style={{ display: 'none' }} 
-                  onChange={handleFileSelect}
-                  accept=".pdf"
-                />
-                <button style={styles.secondaryBtn} onClick={() => fileInputRef.current.click()}>
-                  {file ? 'Change File' : 'Select PDF'}
-                </button>
+      {/* STEP 3: Analyzing */}
+      {phase === 'analyzing' && (
+        <div className="resume-step" key="analyzing">
+          <div className="resume-progress-section">
+            <div className="resume-progress-steps">
+              <div className={`resume-progress-step ${analysisStep >= 1 ? 'active' : ''} ${analysisStep > 1 ? 'done' : ''}`}>
+                <div className="resume-progress-step-dot" />
+                <span>Parsing Resume</span>
               </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Job Description / Role</label>
-                <textarea
-                  style={styles.modernTextArea}
-                  placeholder="What role are you targeting?"
-                  value={keyText}
-                  onChange={(e) => setKeyText(e.target.value)}
-                />
+              <div className={`resume-progress-step ${analysisStep >= 2 ? 'active' : ''} ${analysisStep > 2 ? 'done' : ''}`}>
+                <div className="resume-progress-step-dot" />
+                <span>Analyzing Match</span>
               </div>
-
-              {file && (
-                <button style={styles.primaryBtn} onClick={startAnalysis} disabled={isAnalyzing}>
-                  {isAnalyzing ? 'Processing...' : 'Analyze Match'}
-                </button>
-              )}
-
-              {analysisStep > 0 && (
-                <div style={styles.loaderContainer}>
-                  <div style={{ ...styles.loaderBar, width: analysisStep === 1 ? '33%' : analysisStep === 2 ? '66%' : '100%' }} />
-                </div>
-              )}
+              <div className={`resume-progress-step ${analysisStep >= 3 ? 'active' : ''}`}>
+                <div className="resume-progress-step-dot" />
+                <span>Generating Insights</span>
+              </div>
             </div>
-          </section>
 
-          <section style={styles.resultsSection}>
-            {analysisResult ? (
-              <div style={styles.glassCard}>
-                <div style={styles.scoreRow}>
-                  <div style={styles.scoreCircle}>
-                    <span style={styles.scoreNum}>{analysisResult.overallScore}</span>
-                    <span style={styles.scorePct}>%</span>
-                  </div>
-                  <div>
-                    <h4 style={styles.cardHeading}>ATS Match Score</h4>
-                    <p style={styles.summaryText}>{analysisResult.summary}</p>
-                  </div>
-                </div>
+            <div className="resume-progress-bar">
+              <div
+                className="resume-progress-fill"
+                style={{ width: analysisStep === 1 ? '33%' : analysisStep === 2 ? '66%' : '100%' }}
+              />
+            </div>
+            <p className="resume-progress-hint">This usually takes a few seconds...</p>
+          </div>
+        </div>
+      )}
 
-                <div style={styles.statsGrid}>
-                  <div style={styles.statBox}>
-                    <span style={styles.statLabel}>Strengths</span>
-                    <ul style={styles.list}>
-                      {analysisResult.strengths?.map((s, i) => <li key={i}>{s}</li>)}
-                    </ul>
-                  </div>
-                  <div style={styles.statBox}>
-                    <span style={styles.statLabel}>Gaps</span>
-                    <ul style={styles.list}>
-                      {analysisResult.gaps?.map((g, i) => <li key={i}>{g}</li>)}
-                    </ul>
-                  </div>
-                </div>
+      {/* STEP 4: Results + Chat */}
+      {phase === 'results' && (
+        <div className="resume-step resume-results-step" key="results">
+          <div className="resume-score-banner">
+            <div className="resume-score-gauge">
+              <svg className="resume-score-ring" viewBox="0 0 108 108" width="110" height="110">
+                <circle className="resume-score-ring-bg" cx="54" cy="54" r={radius} />
+                <circle
+                  className="resume-score-ring-fg"
+                  cx="54" cy="54" r={radius}
+                  stroke={scoreColor}
+                  strokeDasharray={circumference}
+                  strokeDashoffset={scoreOffset}
+                />
+              </svg>
+              <div className="resume-score-value">
+                <span className="resume-score-num" style={{ color: scoreColor }}>{score}</span>
+                <span className="resume-score-pct" style={{ color: scoreColor }}>%</span>
               </div>
-            ) : (
-              <div style={styles.emptyCard}>
-                <p>Run analysis to see technical insights</p>
-              </div>
-            )}
+            </div>
+            <div className="resume-score-info">
+              <h2>ATS Match Score</h2>
+              <p>{analysisResult?.summary}</p>
+            </div>
+          </div>
 
-            <div style={styles.chatContainer}>
-              <div style={styles.chatHeader}>HireCraft Assistant</div>
-              <div style={styles.messageArea}>
-                {chatMessages.map((msg, i) => (
-                  <div key={i} style={msg.role === 'user' ? styles.bubbleUser : styles.bubbleBot}>
-                    {msg.content}
-                  </div>
+          <div className="resume-insights-grid">
+            <div className="resume-insight-card strengths">
+              <h3 className="resume-insight-title">Strengths</h3>
+              <ul className="resume-insight-list">
+                {analysisResult?.strengths?.map((s, i) => (
+                  <li key={i} className="resume-insight-item">{s}</li>
                 ))}
-                {isChatLoading && <div style={styles.bubbleBot}>Thinking...</div>}
-              </div>
-              <div style={styles.chatInputWrapper}>
-                <input 
-                  style={styles.chatField} 
-                  placeholder="Ask a follow-up..."
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendChatMessage()}
-                />
-                <button style={styles.sendIconBtn} onClick={sendChatMessage}>→</button>
-              </div>
+              </ul>
             </div>
-          </section>
+            <div className="resume-insight-card gaps">
+              <h3 className="resume-insight-title">Areas to Improve</h3>
+              <ul className="resume-insight-list">
+                {analysisResult?.gaps?.map((g, i) => (
+                  <li key={i} className="resume-insight-item">{g}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="resume-actions">
+            <button className="resume-new-btn" onClick={resetAnalysis}>
+              Analyze Another Resume
+            </button>
+          </div>
+
+          <div className="resume-chat-section">
+            <div className="resume-chat-header">
+              <span>💬</span> Ask about your results
+            </div>
+            <div className="resume-chat-messages">
+              {chatMessages.length === 0 && (
+                <p style={{ textAlign: 'center', color: '#3a3a3d', fontSize: '13px', margin: 'auto' }}>
+                  Ask follow-up questions about your resume analysis...
+                </p>
+              )}
+              {chatMessages.map((msg, i) => (
+                <div key={i} className={`resume-chat-bubble ${msg.role}`}>
+                  {msg.role === 'assistant' && <div className="resume-chat-avatar">HC</div>}
+                  <div className="resume-chat-text">{renderMessageContent(msg.content)}</div>
+                </div>
+              ))}
+              {isChatLoading && (
+                <div className="resume-chat-bubble assistant">
+                  <div className="resume-chat-avatar">HC</div>
+                  <div className="resume-chat-text">
+                    <span className="resume-typing">Thinking...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+            <div className="resume-chat-input-row">
+              <input
+                className="resume-chat-input"
+                placeholder="Ask a follow-up question..."
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && sendChatMessage()}
+              />
+              <button className="resume-chat-send" onClick={sendChatMessage}>→</button>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      )}
+    </AppLayout>
   );
 }
-
-const styles = {
-  // --- BASE LAYOUT ---
-  workspace: { 
-    display: 'flex', 
-    minHeight: '100vh', 
-    width: '100%', 
-    background: '#ffffff', 
-    color: '#1e293b', 
-    fontFamily: "'Inter', sans-serif", 
-    overflowX: 'hidden' 
-  },
-
-  // --- NAVBAR & SIDEBAR ---
-  navbarTriggerLine: { 
-    position: 'fixed', 
-    left: 0, 
-    top: 0, 
-    bottom: 0, 
-    width: '12px', 
-    zIndex: 150, 
-    background: '#800000', 
-    cursor: 'pointer' 
-  },
-  sidebar: { 
-    background: '#ffffff', 
-    borderRight: '1px solid #e2e8f0', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    padding: '32px 24px', 
-    position: 'fixed', 
-    left: 0, 
-    top: 0, 
-    height: '100vh', 
-    zIndex: 200, 
-    transition: '0.3s ease', 
-    overflow: 'hidden' 
-  },
-  sidebarHeader: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '12px', 
-    marginBottom: '40px', 
-    cursor: 'pointer' 
-  },
-  logoBox: { 
-    minWidth: '34px', 
-    height: '34px', 
-    background: '#0f172a', 
-    borderRadius: '8px', 
-    color: '#fff', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    fontWeight: 800 
-  },
-  brandName: { fontWeight: 700, fontSize: '1.2rem', color: '#0f172a' },
-  sideNav: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  sideNavLink: { 
-    textDecoration: 'none', 
-    color: '#64748b', 
-    padding: '12px 16px', 
-    borderRadius: '8px', 
-    fontSize: '14px', 
-    fontWeight: 500 
-  },
-  sideNavLinkActive: { 
-    textDecoration: 'none', 
-    color: '#0f172a', 
-    background: '#f1f5f9', 
-    padding: '12px 16px', 
-    borderRadius: '8px', 
-    fontSize: '14px', 
-    fontWeight: 600 
-  },
-  accountTabTrigger: { 
-    cursor: 'pointer', 
-    padding: '12px 16px', 
-    display: 'flex', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    fontSize: '14px', 
-    fontWeight: 500, 
-    color: '#64748b' 
-  },
-  nestedMenu: { paddingLeft: '12px', display: 'flex', flexDirection: 'column', gap: '4px' },
-  nestedLink: { textDecoration: 'none', color: '#94a3b8', fontSize: '13px', padding: '4px 0' },
-  logoutTrigger: { 
-    background: 'none', 
-    border: 'none', 
-    color: '#ef4444', 
-    textAlign: 'left', 
-    cursor: 'pointer', 
-    padding: '8px 0', 
-    fontSize: '13px', 
-    fontWeight: 600 
-  },
-
-  // --- CONTENT HEADER ---
-  mainContent: { 
-    flex: 1, 
-    display: 'flex', 
-    flexDirection: 'column', 
-    padding: '48px 60px', 
-    transition: 'padding-left 0.3s ease' 
-  },
-  headerSection: { marginBottom: '40px' },
-  pageTitle: { fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subText: { color: '#64748b', fontSize: '14px', marginTop: '4px' },
-
-  // --- DASHBOARD LAYOUT ---
-  dashboardLayout: { 
-    display: 'grid', 
-    gridTemplateColumns: '1.2fr 1.1fr', 
-    gap: '32px', 
-    alignItems: 'start' 
-  },
-  glassCard: { 
-    background: '#ffffff', 
-    border: '1px solid #e2e8f0', 
-    padding: '40px', 
-    borderRadius: '24px', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: '24px' 
-  },
-  uploadZone: { 
-    border: '2px dashed #e2e8f0', 
-    borderRadius: '20px', 
-    padding: '40px 20px', 
-    textAlign: 'center', 
-    transition: '0.2s' 
-  },
-  uploadIcon: { fontSize: '2rem', marginBottom: '10px' },
-  uploadTitle: { fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' },
-  inputGroup: { marginTop: '10px' },
-  label: { 
-    fontSize: '13px', 
-    fontWeight: 600, 
-    color: '#0f172a', 
-    marginBottom: '6px', 
-    display: 'block' 
-  },
-  modernTextArea: { 
-    width: '100%', 
-    minHeight: '100px', 
-    padding: '12px', 
-    borderRadius: '12px', 
-    border: '1px solid #e2e8f0', 
-    fontSize: '13px', 
-    outline: 'none', 
-    resize: 'vertical' 
-  },
-  primaryBtn: { 
-    width: '100%', 
-    padding: '14px', 
-    borderRadius: '12px', 
-    background: '#800000', 
-    border: 'none', 
-    color: '#fff', 
-    fontWeight: 600, 
-    cursor: 'pointer' 
-  },
-  secondaryBtn: { 
-    background: '#f1f5f9', 
-    color: '#0f172a', 
-    border: 'none', 
-    padding: '10px 20px', 
-    borderRadius: '10px', 
-    fontWeight: 600, 
-    cursor: 'pointer', 
-    marginTop: '10px' 
-  },
-  loaderContainer: { height: '6px', background: '#e2e8f0', borderRadius: '10px', marginTop: '10px', overflow: 'hidden' },
-  loaderBar: { height: '100%', background: '#800000', transition: '0.4s' },
-
-  // --- RESULTS SECTION ---
-  resultsSection: { display: 'flex', flexDirection: 'column', gap: '24px' },
-  scoreRow: { display: 'flex', gap: '20px', alignItems: 'center' },
-  scoreCircle: { 
-    minWidth: '70px', 
-    height: '70px', 
-    borderRadius: '50%', 
-    border: '4px solid #800000', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    color: '#800000' 
-  },
-  scoreNum: { fontSize: '1.4rem', fontWeight: 800 },
-  scorePct: { fontSize: '0.7rem', fontWeight: 700 },
-  cardHeading: { fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#0f172a' },
-  summaryText: { fontSize: '13px', color: '#64748b', marginTop: '4px' },
-  statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '10px' },
-  statBox: { 
-    background: '#fff5f5', 
-    padding: '16px', 
-    borderRadius: '16px', 
-    border: '1px solid #fecaca' 
-  },
-  statLabel: { 
-    display: 'block', 
-    fontWeight: 700, 
-    fontSize: '12px', 
-    color: '#800000', 
-    marginBottom: '8px', 
-    textTransform: 'uppercase' 
-  },
-  list: { paddingLeft: '15px', fontSize: '13px', color: '#475569', margin: 0 },
-  emptyCard: { 
-    flex: 1, 
-    background: '#fff', 
-    borderRadius: '24px', 
-    border: '2px dashed #e2e8f0', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    color: '#94a3b8', 
-    minHeight: '200px' 
-  },
-
-  // --- HIRECRAFT ASSISTANT (CHAT) ---
-  chatContainer: { 
-    background: '#ffffff', 
-    borderRadius: '24px', 
-    border: '1px solid #e2e8f0', 
-    height: '420px', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    overflow: 'hidden' 
-  },
-  chatHeader: { 
-    padding: '16px 20px', 
-    background: '#800000', // Updated to Maroon
-    color: '#fff', 
-    fontWeight: 700, 
-    fontSize: '14px',
-    textAlign: 'center'
-  },
-  messageArea: { 
-    flex: 1, 
-    padding: '20px', 
-    overflowY: 'auto', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: '12px', 
-    background: '#f8fafc' 
-  },
-  bubbleBot: { 
-    alignSelf: 'flex-start', 
-    background: '#e2e8f0', 
-    color: '#0f172a', 
-    padding: '10px 14px', 
-    borderRadius: '16px 16px 16px 4px', 
-    fontSize: '13px', 
-    maxWidth: '85%' 
-  },
-  bubbleUser: { 
-    alignSelf: 'flex-end', 
-    background: '#800000', 
-    color: '#fff', 
-    padding: '10px 14px', 
-    borderRadius: '16px 16px 4px 16px', 
-    fontSize: '13px', 
-    maxWidth: '85%' 
-  },
-  chatInputWrapper: { 
-    padding: '12px 16px', 
-    borderTop: '1px solid #e2e8f0', 
-    display: 'flex', 
-    gap: '10px', 
-    background: '#fff' 
-  },
-  chatField: { 
-    flex: 1, 
-    border: '1px solid #e2e8f0', 
-    background: '#f8fafc', 
-    padding: '10px 16px', 
-    borderRadius: '999px', 
-    outline: 'none', 
-    fontSize: '13px' 
-  },
-  sendIconBtn: { 
-    background: '#800000', 
-    color: '#fff', 
-    border: 'none', 
-    width: '40px', 
-    height: '40px', 
-    borderRadius: '50%', 
-    cursor: 'pointer', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    fontWeight: 700 
-  }
-};

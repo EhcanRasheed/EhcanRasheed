@@ -7,62 +7,67 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: '#eef2f6',
+    width: '100vw',
+    background: '#0a0a0b',
     padding: '20px',
     fontFamily: "'Inter', sans-serif",
+    boxSizing: 'border-box',
   },
   content: {
     textAlign: 'center',
-    backgroundColor: 'white',
-    borderRadius: '24px',
-    padding: '60px 40px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
-    maxWidth: '1000px', 
+    backgroundColor: '#161618',
+    borderRadius: '10px',
+    padding: '64px 48px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+    maxWidth: '1000px',
     width: '100%',
-    border: '1px solid #e2e8f0',
+    border: '1px solid rgba(255,255,255,0.08)',
   },
   logoBox: {
-    width: 60,
-    height: 60,
-    background: '#0f172a',
-    borderRadius: '16px',
-    color: '#fff',
+    width: 64,
+    height: 64,
+    background: '#c4a052',
+    borderRadius: '12px',
+    color: '#0a0a0b',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 800,
     fontSize: '24px',
-    margin: '0 auto 24px',
-    boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.2)',
+    margin: '0 auto 28px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   },
   title: {
-    fontSize: '42px',
+    fontSize: '44px',
     fontWeight: 800,
-    color: '#0f172a',
-    marginBottom: '15px',
-    letterSpacing: '-1px',
+    color: '#e8e8eb',
+    marginBottom: '16px',
+    letterSpacing: '-1.5px',
   },
   brandHighlight: {
-    color: '#800000',
+    background: '#c4a052',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
   },
   subtitle: {
-    fontSize: '18px',
-    color: '#475569',
+    fontSize: '17px',
+    color: '#6b6b70',
     marginBottom: '40px',
-    lineHeight: '1.6',
+    lineHeight: '1.65',
     fontWeight: 500,
   },
   featuresGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
     gap: '20px',
-    margin: '30px 0',
+    margin: '32px 0',
   },
   feature: {
     padding: '24px',
-    borderRadius: '16px',
-    background: '#f8fafc',
-    border: '1px solid #f1f5f9',
+    borderRadius: '10px',
+    background: '#1d1d20',
+    border: '1px solid rgba(255,255,255,0.07)',
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'column',
@@ -70,34 +75,34 @@ const styles = {
   },
   hireEaseFeature: {
     padding: '24px',
-    borderRadius: '16px',
-    background: '#fff',
-    border: '2px solid #800000',
+    borderRadius: '10px',
+    background: 'rgba(196,160,82,0.06)',
+    border: '2px solid rgba(196,160,82,0.2)',
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 10px 15px -3px rgba(128, 0, 0, 0.1)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   },
   featureTitle: {
-    fontSize: '13px',
-    color: '#0f172a',
+    fontSize: '12px',
+    color: '#86868b',
     fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: '0.5px',
+    letterSpacing: '1px',
     marginBottom: '8px',
     display: 'block'
   },
   featureDesc: {
     fontSize: '13px',
-    color: '#64748b',
-    lineHeight: '1.5'
+    color: '#6b6b70',
+    lineHeight: '1.6'
   },
   buttonContainer: {
     display: 'flex',
     gap: '16px',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginTop: '40px',
+    marginTop: '44px',
   },
   primaryButton: {
     padding: '16px 48px',
@@ -107,19 +112,20 @@ const styles = {
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    background: '#800000',
-    color: '#fff',
+    background: '#c4a052',
+    color: '#0a0a0b',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   },
   secondaryButton: {
     padding: '16px 48px',
     fontSize: '16px',
     fontWeight: '700',
-    border: '2px solid #e2e8f0',
+    border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    background: '#fff',
-    color: '#0f172a',
+    background: 'rgba(255,255,255,0.05)',
+    color: '#86868b',
   },
 };
 
@@ -128,8 +134,8 @@ export default function Welcome() {
   const [hoveredBtn, setHoveredBtn] = React.useState(null);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.content}>
+    <div className="workspace" style={styles.container}>
+      <div className="glass-card" style={styles.content}>
         <div style={styles.logoBox}>HC</div>
         
         <h1 style={styles.title}>
@@ -169,9 +175,9 @@ export default function Welcome() {
           <div style={styles.hireEaseFeature}>
             <span 
               style={{
-                ...styles.featureTitle, 
-                color: '#800000', 
-                fontWeight: '900', 
+                ...styles.featureTitle,
+                color: '#d4b062',
+                fontWeight: '900',
                 fontSize: '14px'
               }}
             >
@@ -187,7 +193,7 @@ export default function Welcome() {
           <button
             style={{
               ...styles.primaryButton,
-              background: hoveredBtn === 'login' ? '#600000' : '#800000',
+              background: hoveredBtn === 'login' ? '#b89545' : '#c4a052',
               transform: hoveredBtn === 'login' ? 'translateY(-2px)' : 'none'
             }}
             onMouseEnter={() => setHoveredBtn('login')}
@@ -200,8 +206,9 @@ export default function Welcome() {
           <button
             style={{
               ...styles.secondaryButton,
-              borderColor: hoveredBtn === 'register' ? '#0f172a' : '#e2e8f0',
-              background: hoveredBtn === 'register' ? '#f8fafc' : '#fff',
+              borderColor: hoveredBtn === 'register' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.15)',
+              background: hoveredBtn === 'register' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
+              color: hoveredBtn === 'register' ? '#e8e8eb' : '#86868b',
               transform: hoveredBtn === 'register' ? 'translateY(-2px)' : 'none'
             }}
             onMouseEnter={() => setHoveredBtn('register')}

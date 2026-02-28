@@ -24,4 +24,21 @@ export class ChatbotController {
       throw new HttpException(error.message || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post('evaluate')
+  async evaluate(@Body() body: { history?: any[] }) {
+    const { history = [] } = body;
+
+    if (!history.length) {
+      throw new HttpException('Conversation history is required', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const result = await this.chatbotService.evaluateSession(history);
+      return { success: true, ...result };
+    } catch (error: any) {
+      console.error('Evaluate Error:', error.message);
+      throw new HttpException(error.message || 'Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

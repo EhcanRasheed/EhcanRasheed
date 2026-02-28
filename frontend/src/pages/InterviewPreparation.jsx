@@ -1,148 +1,176 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+﻿import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AppLayout from '../components/AppLayout';
+import * as interviewApi from '../api/interview';
 
 export default function InterviewPreparation() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
-  
-  const [isNavbarVisible, setIsNavbarVisible] = useState(false);
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [banks, setBanks] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [starting, setStarting] = useState(false);
+  const [tab, setTab] = useState('banks'); // 'banks' | 'history'
+  const [filterCat, setFilterCat] = useState('All');
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
     try {
-      await fetch('http://localhost:3000/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-    } finally {
-      logout();
-      localStorage.clear();
-      navigate('/login');
+      const [b, h] = await Promise.all([
+        interviewApi.getAvailableBanks(),
+        interviewApi.getMyHistory(),
+      ]);
+      setBanks(b);
+      setHistory(h);
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  };
+
+  const handleStart = async (bankId) => {
+    setStarting(true);
+    try {
+      const data = await interviewApi.startSession(bankId);
+      navigate(`/interview/session/${data.sessionId}`);
+    } catch (e) {
+      alert(e.response?.data?.message || 'Failed to start session');
+    }
+    setStarting(false);
+  };
+
+  const handleDeleteSession = async (e, sessionId) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this interview session? This cannot be undone.')) return;
+    try {
+      await interviewApi.deleteSession(sessionId);
+      setHistory((prev) => prev.filter((h) => h.id !== sessionId));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete session');
     }
   };
 
   return (
-    <div style={styles.workspace}>
-      
-      {/* PROFESSIONAL MAROON TRIGGER LINE */}
-      <div 
-        style={styles.navbarTriggerLine} 
-        onMouseEnter={() => setIsNavbarVisible(true)}
-      />
+    <AppLayout activePage="interview">
+      <div style={s.hero}>
+        <h1 style={s.heroTitle}>Interview Preparation</h1>
+        <p style={s.heroSub}>Choose a question bank to begin a mock interview, or review past sessions.</p>
+      </div>
 
-      {/* DYNAMIC SIDEBAR - ONLY SEEN ON HOVER */}
-      <aside 
-        style={{
-          ...styles.sidebar, 
-          width: isNavbarVisible ? '280px' : '0px',
-          visibility: isNavbarVisible ? 'visible' : 'hidden',
-          opacity: isNavbarVisible ? 1 : 0
-        }}
-        onMouseLeave={() => {
-          setIsNavbarVisible(false);
-          setIsAccountOpen(false);
-        }}
-      >
-        <div style={styles.sidebarHeader} onClick={() => navigate('/dashboard')}>
-          <div style={styles.logoBox}>HC</div>
-          <span style={styles.brandName}>HireCraft</span>
-        </div>
+      {/* Tabs */}
+      <div style={s.tabs}>
+        <button style={tab === 'banks' ? s.tabActive : s.tab} onClick={() => setTab('banks')}>Question Banks</button>
+        <button style={tab === 'history' ? s.tabActive : s.tab} onClick={() => setTab('history')}>My History ({history.length})</button>
+      </div>
 
-        <nav style={styles.sideNav}>
-          <Link to="/dashboard" style={styles.sideNavLink}>Home</Link>
-          <Link to="/resume" style={styles.sideNavLink}>Resume Lab</Link>
-          <Link to="/chatbot" style={styles.sideNavLink}>Chatbot</Link>
-          <Link to="/interview" style={styles.sideNavLinkActive}>Interview Preparation</Link>
-
-          <div style={styles.accountTabTrigger} onClick={() => setIsAccountOpen(!isAccountOpen)}>
-            <span>Account</span>
-            <span style={{ transform: isAccountOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: '0.2s' }}>▼</span>
-          </div>
-
-          {isAccountOpen && (
-            <div style={styles.nestedMenu}>
-              <Link to="/change-username" style={styles.nestedLink}>Change Username</Link>
-              <Link to="/change-password" style={styles.nestedLink}>Change Password</Link>
-              <Link to="/subscription" style={styles.nestedLink}>Subscription Plan</Link>
-              <button style={styles.logoutTrigger} onClick={() => setShowLogoutModal(true)}>
-                Sign Out
-              </button>
+      {loading ? (
+        <p style={s.loading}>Loading…</p>
+      ) : tab === 'banks' ? (
+        <>
+          {/* Category filter */}
+          {banks.length > 0 && (() => {
+            const cats = ['All', ...Array.from(new Set(banks.map(b => b.category))).sort()];
+            return (
+              <div style={s.filterRow}>
+                {cats.map((c) => (
+                  <button key={c} style={filterCat === c ? s.filterActive : s.filterBtn} onClick={() => setFilterCat(c)}>{c}</button>
+                ))}
+              </div>
+            );
+          })()}
+          <div style={s.grid}>
+            {banks.filter(b => filterCat === 'All' || b.category === filterCat).length === 0 && <p style={s.empty}>No question banks match this filter.</p>}
+            {banks.filter(b => filterCat === 'All' || b.category === filterCat).map((b) => (
+            <div key={b.id} style={s.card}>
+              <div style={s.cardBadge}>{b.category}</div>
+              <h3 style={s.cardTitle}>{b.name}</h3>
+              <p style={s.cardDesc}>{b.description || 'No description'}</p>
+              {/* Difficulty breakdown */}
+              <div style={s.diffRow}>
+                {b.easyCount > 0 && <span style={s.diffPill('#4ade80')}>🟢 {b.easyCount} Easy</span>}
+                {b.mediumCount > 0 && <span style={s.diffPill('#c4a052')}>🟡 {b.mediumCount} Medium</span>}
+                {b.hardCount > 0 && <span style={s.diffPill('#f87171')}>🔴 {b.hardCount} Hard</span>}
+              </div>
+              <div style={s.cardFooter}>
+                <span style={s.qCount}>{b.questionCount} questions</span>
+                <button style={s.startBtn} onClick={() => handleStart(b.id)} disabled={starting}>
+                  {starting ? 'Starting…' : 'Start Interview →'}
+                </button>
+              </div>
             </div>
-          )}
-
-          <div style={styles.premiumDivider}>Enterprise Tier</div>
-          <Link to="/hiring-ease" style={styles.premiumLink}>
-            <span>Hiring Ease</span>
-            <span style={styles.badge}>Pro</span>
-          </Link>
-        </nav>
-      </aside>
-
-      {/* MAIN CONTENT AREA */}
-      <main
-        style={{
-          ...styles.mainContent,
-          paddingLeft: isNavbarVisible ? '320px' : '60px'
-        }}
-      >
-        <div style={styles.launchCard}>
-          <div style={styles.badge}>Coming Soon</div>
-          <h1 style={styles.launchTitle}>Launch in Progress</h1>
-          <p style={styles.launchText}>
-            We are currently perfecting our AI simulation engine. This feature will be launching soon 🚀
-          </p>
-          <button style={styles.maroonBtn} onClick={() => navigate('/dashboard')}>
-            Return to Dashboard
-          </button>
-        </div>
-      </main>
-
-      {/* LOGOUT MODAL */}
-      {showLogoutModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>Sign Out?</h2>
-            <p style={styles.modalText}>Are you sure you want to end your session?</p>
-            <div style={styles.modalActions}>
-              <button style={styles.cancelBtn} onClick={() => setShowLogoutModal(false)}>Stay</button>
-              <button style={styles.confirmBtn} onClick={handleLogout}>Sign Out</button>
-            </div>
+          ))}
           </div>
+        </>
+      ) : (
+        <div style={s.historyList}>
+          {history.length === 0 && <p style={s.empty}>No interviews yet. Pick a bank above to get started!</p>}
+          {[...history].sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt)).map((h) => {
+            const d = new Date(h.startedAt);
+            const day = d.getDate();
+            const month = d.toLocaleString('default', { month: 'short' });
+            const year = d.getFullYear();
+            const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return (
+            <div key={h.id} style={s.historyItem} onClick={() => navigate(`/interview/result/${h.id}`)}>
+              <div style={s.histColLeft}>
+                <div style={s.hBankName}>{h.bankName}</div>
+                <div style={s.hMeta}>{h.category}</div>
+              </div>
+              <div style={s.histColRight}>
+                <div style={s.histDateCol}>
+                  <span style={s.histDateText}>{day} {month} {year}</span>
+                  <span style={s.histTimeText}>{time}</span>
+                </div>
+                <span style={s.statusBadge(h.status)}>{h.status}</span>
+                {h.totalScore != null && <span style={s.scoreBadge}>{h.totalScore.toFixed(1)}</span>}
+                <button style={s.delBtn} onClick={(e) => handleDeleteSession(e, h.id)} title="Delete session">🗑</button>
+              </div>
+            </div>
+            );
+          })}
         </div>
       )}
-    </div>
+    </AppLayout>
   );
 }
 
-const styles = {
-  workspace: { display: 'flex', minHeight: '100vh', width: '100%', background: '#f8fafc', color: '#1e293b', fontFamily: "'Inter', sans-serif", overflowX: 'hidden' },
-  navbarTriggerLine: { position: 'fixed', left: 0, top: 0, bottom: 0, width: '12px', zIndex: 150, background: '#800000', cursor: 'pointer' },
-  sidebar: { background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '32px 24px 200px 24px', position: 'fixed', left: 0, top: 0, height: '100vh', zIndex: 200, transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease', overflow: 'hidden' },
-  sidebarHeader: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px', whiteSpace: 'nowrap', cursor: 'pointer' },
-  logoBox: { minWidth: '34px', height: '34px', background: '#0f172a', borderRadius: '8px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 },
-  brandName: { fontWeight: 700, fontSize: '1.2rem', color: '#0f172a' },
-  sideNav: { display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, whiteSpace: 'nowrap' },
-  sideNavLink: { textDecoration: 'none', color: '#64748b', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 500 },
-  sideNavLinkActive: { textDecoration: 'none', color: '#0f172a', background: '#f1f5f9', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600 },
-  accountTabTrigger: { cursor: 'pointer', color: '#64748b', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', fontWeight: 500 },
-  nestedMenu: { display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '24px', marginBottom: '8px', borderLeft: '2px solid #f1f5f9', marginLeft: '16px' },
-  nestedLink: { textDecoration: 'none', color: '#94a3b8', padding: '8px 12px', fontSize: '13px' },
-  logoutTrigger: { width: '100%', background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', color: '#dc2626', fontWeight: 600, fontSize: '13px', marginTop: '8px', textAlign: 'left' },
-  premiumDivider: { fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '32px', marginBottom: '8px', paddingLeft: '16px' },
-  premiumLink: { textDecoration: 'none', color: '#800000', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff5f5' },
-  badge: { fontSize: '10px', background: '#800000', color: '#fff', padding: '2px 6px', borderRadius: '4px' },
-  mainContent: { flex: 1, display: 'flex', flexDirection: 'column', padding: '48px 60px', transition: 'padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)', alignItems: 'center', justifyContent: 'center' },
-  launchCard: { background: '#fff', padding: '60px', borderRadius: '32px', border: '1px solid #e2e8f0', textAlign: 'center', maxWidth: '600px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' },
-  launchTitle: { fontSize: '2rem', fontWeight: 800, color: '#0f172a', marginBottom: '16px' },
-  launchText: { color: '#64748b', fontSize: '16px', lineHeight: '1.6', marginBottom: '32px' },
-  maroonBtn: { background: '#800000', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' },
-  overlay: { position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 300 },
-  modal: { background: '#fff', padding: '40px', borderRadius: '24px', width: '380px', textAlign: 'center' },
-  modalTitle: { marginBottom: '12px', fontSize: '1.5rem', fontWeight: 800 },
-  modalText: { color: '#64748b', fontSize: '14px', marginBottom: '24px' },
-  modalActions: { display: 'flex', gap: '12px' },
-  confirmBtn: { flex: 1, background: '#ef4444', color: '#fff', border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' },
-  cancelBtn: { flex: 1, background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }
+const s = {
+  hero: { textAlign: 'center', marginBottom: 36 },
+  heroTitle: { fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, color: '#e8e8eb', margin: '0 0 10px' },
+  heroSub: { color: '#6b6b70', fontSize: 14, lineHeight: 1.7, maxWidth: 480, margin: '0 auto' },
+  tabs: { display: 'flex', gap: 0, marginBottom: 28, borderBottom: '1px solid rgba(255,255,255,0.07)' },
+  tab: { background: 'transparent', border: 'none', color: '#6b6b70', padding: '10px 24px', cursor: 'pointer', fontSize: 14, fontWeight: 600, borderBottom: '2px solid transparent', transition: 'all 0.2s' },
+  tabActive: { background: 'transparent', border: 'none', color: '#c4a052', padding: '10px 24px', cursor: 'pointer', fontSize: 14, fontWeight: 700, borderBottom: '2px solid #c4a052' },
+  loading: { color: '#6b6b70', textAlign: 'center', padding: 40 },
+  empty: { color: '#6b6b70', fontSize: 13, textAlign: 'center', padding: 40 },
+  filterRow: { display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
+  filterBtn: { background: '#161618', border: '1px solid rgba(255,255,255,0.08)', color: '#6b6b70', padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 600, transition: 'all 0.15s' },
+  filterActive: { background: '#c4a052', border: '1px solid #c4a052', color: '#0a0a0b', padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700 },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 20 },
+  card: { background: '#161618', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '24px 22px', display: 'flex', flexDirection: 'column', gap: 10 },
+  cardBadge: { display: 'inline-block', background: '#c4a052', color: '#0a0a0b', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: 0.5, alignSelf: 'flex-start' },
+  cardTitle: { fontSize: 16, fontWeight: 700, color: '#e8e8eb', margin: 0 },
+  cardDesc: { fontSize: 13, color: '#6b6b70', lineHeight: 1.5, margin: 0, flex: 1 },
+  diffRow: { display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 },
+  diffPill: (color) => ({ fontSize: 11, fontWeight: 600, color, background: `${color}18`, padding: '3px 10px', borderRadius: 10 }),
+  cardFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  qCount: { fontSize: 12, color: '#6b6b70' },
+  startBtn: { background: '#c4a052', color: '#0a0a0b', border: 'none', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 700 },
+  historyList: { display: 'flex', flexDirection: 'column', gap: 10 },
+  historyItem: { display: 'flex', alignItems: 'center', background: '#161618', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: '16px 20px', cursor: 'pointer', transition: 'border-color 0.2s', gap: 16 },
+  histColLeft: { flex: 1 },
+  histColRight: { display: 'flex', gap: 14, alignItems: 'center', flexShrink: 0 },
+  histDateCol: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' },
+  histDateText: { fontSize: 13, fontWeight: 600, color: '#c8c8cc' },
+  histTimeText: { fontSize: 11, color: '#6b6b70', marginTop: 2 },
+  hBankName: { fontSize: 14, fontWeight: 700, color: '#e8e8eb' },
+  hMeta: { fontSize: 11, color: '#6b6b70', marginTop: 3 },
+  statusBadge: (status) => ({
+    fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 10,
+    background: status === 'evaluated' ? '#28a74520' : status === 'completed' ? '#c4a05220' : '#6b6b7020',
+    color: status === 'evaluated' ? '#28a745' : status === 'completed' ? '#c4a052' : '#6b6b70',
+  }),
+  scoreBadge: { fontSize: 16, fontWeight: 800, color: '#c4a052' },
+  delBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '4px 6px', borderRadius: 6, opacity: 0.5, transition: 'opacity 0.2s' },
 };

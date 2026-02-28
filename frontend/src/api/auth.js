@@ -237,7 +237,7 @@
 // export default authApi;
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/auth';
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000') + '/auth';
 
 const authApi = axios.create({
   baseURL: API_BASE_URL,

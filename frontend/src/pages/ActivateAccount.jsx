@@ -12,49 +12,51 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    background: '#f5f1ed',
+    background: '#0a0a0b',
     padding: '20px',
-    fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+    fontFamily: "'Inter', sans-serif",
   },
   form: {
-    backgroundColor: 'white',
-    borderRadius: '20px',
-    padding: '40px',
-    boxShadow: '0 15px 50px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#161618',
+    borderRadius: '12px',
+    padding: '48px 40px',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     maxWidth: '420px',
     width: '100%',
     textAlign: 'center',
+    border: '1px solid rgba(255,255,255,0.08)',
   },
   title: {
-    fontSize: '32px',
-    fontWeight: 'bold',
-    background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%)',
+    fontSize: '28px',
+    fontWeight: 800,
+    background: '#c4a052',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
-    marginBottom: '30px',
+    marginBottom: '28px',
+    letterSpacing: '-0.5px',
   },
   message: {
-    fontSize: '16px',
+    fontSize: '14px',
     marginTop: '20px',
     padding: '16px',
-    borderRadius: '10px',
-    color: '#000',
+    borderRadius: '12px',
+    fontWeight: 500,
   },
   pendingMsg: {
-    backgroundColor: '#ecf0f1',
-    border: '2px solid #95a5a6',
-    color: '#2c3e50',
+    backgroundColor: 'rgba(196,160,82,0.06)',
+    border: '1px solid rgba(196,160,82,0.15)',
+    color: '#86868b',
   },
   successMsg: {
-    backgroundColor: '#d5f4e6',
-    border: '2px solid #27ae60',
-    color: '#27ae60',
+    backgroundColor: 'rgba(34,197,94,0.1)',
+    border: '1px solid rgba(34,197,94,0.25)',
+    color: '#3faa72',
   },
   errorMsg: {
-    backgroundColor: '#fadbd8',
-    border: '2px solid #e74c3c',
-    color: '#c0392b',
+    backgroundColor: 'rgba(239,68,68,0.1)',
+    border: '1px solid rgba(239,68,68,0.25)',
+    color: '#dc4a4a',
   },
   icon: {
     fontSize: '48px',
@@ -92,8 +94,8 @@ export default function ActivateAccount() {
   }, [token, activateAccount, navigate]);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.form}>
+    <div className="workspace" style={styles.container}>
+      <div className="glass-card" style={styles.form}>
         <h2 style={styles.title}>✉️ Activate Account</h2>
         <div style={{ ...styles.icon }}>
           {status === 'pending' && '⏳'}

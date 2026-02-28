@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const passwordRuleText =
     'Password must be at least 7 characters and include letters and numbers.';
@@ -25,8 +27,8 @@ export default function Register() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Helper to handle input changes
   const handleChange = (e) => {
@@ -39,8 +41,6 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setMessage(null);
 
     // Frontend-only limit: max 3 OTP/registration attempts per email within 1 hour
     try {
@@ -53,9 +53,7 @@ export default function Register() {
       const recent = existing.filter((ts) => now - ts <= 60 * 60 * 1000); // last 1 hour
 
       if (recent.length >= 3) {
-        setError(
-          'Too much OTP request. Please try again after some time.'
-        );
+        toast.error('Too much OTP request. Please try again after some time.');
         return;
       }
 
@@ -69,12 +67,12 @@ export default function Register() {
 
     // Final check before sending
     if (!isPasswordStrong(formData.password)) {
-      setError(passwordRuleText);
+      toast.error(passwordRuleText);
       return;
     }
 
     if (!passwordsMatch) {
-      setError("Passwords do not match. Please try again.");
+      toast.error('Passwords do not match. Please try again.');
       return;
     }
 
@@ -89,7 +87,7 @@ export default function Register() {
       });
 
       // ✅ SUCCESS LOGIC: Show feedback to user
-      setMessage(res?.message || "Registration successful! Redirecting to verification...");
+      toast.success(res?.message || 'Registration successful! Redirecting to verification...');
       
       // ✅ AUTOMATIC REDIRECT: Moves to OTP page and passes the email
       setTimeout(() => {
@@ -97,23 +95,22 @@ export default function Register() {
       }, 2000);
 
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Registration failed");
+      toast.error(err.response?.data?.message || err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formCard}>
+    <div className="workspace" style={styles.container}>
+      <div className="glass-card" style={styles.formCard}>
         <div style={styles.header}>
           <div style={styles.logo}>HC</div>
           <h2 style={styles.title}>Create Account</h2>
           <p style={styles.subtitle}>Join HireCraft to start your preparation.</p>
         </div>
 
-        {message && <div style={styles.successBox}>{message}</div>}
-        {error && <div style={styles.errorBox}>{error}</div>}
+        {/* messages now shown via toast */}
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.inputGroup}>
@@ -159,40 +156,48 @@ export default function Register() {
 
           <div style={styles.inputGroup}>
             <label style={styles.label}>Password</label>
+            <div style={{ position: 'relative' }}>
             <input
               name="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               style={{
                 ...styles.input,
-                borderColor: showMatchError ? '#ef4444' : '#d1d5db'
+                paddingRight: 44,
+                borderColor: showMatchError ? '#dc4a4a' : '#d1d5db'
               }}
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
               required
             />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#6b6b70', cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1 }}>{showPassword ? '🙈' : '👁️'}</button>
+            </div>
             <span style={styles.helpText}>{passwordRuleText}</span>
           </div>
 
           <div style={styles.inputGroup}>
             <label style={styles.label}>Confirm Password</label>
+            <div style={{ position: 'relative' }}>
             <input
               name="confirmPassword"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               style={{
                 ...styles.input,
-                borderColor: showMatchError ? '#ef4444' : (formData.confirmPassword && passwordsMatch ? '#16a34a' : '#d1d5db')
+                paddingRight: 44,
+                borderColor: showMatchError ? '#dc4a4a' : (formData.confirmPassword && passwordsMatch ? '#2f8a5a' : '#d1d5db')
               }}
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
+            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#6b6b70', cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1 }}>{showConfirmPassword ? '🙈' : '👁️'}</button>
+            </div>
             {/* Runtime Feedback Label */}
             {formData.confirmPassword && (
               <span style={{ 
                 fontSize: '12px', 
-                color: passwordsMatch ? '#16a34a' : '#ef4444',
+                color: passwordsMatch ? '#2f8a5a' : '#dc4a4a',
                 marginTop: '4px',
                 display: 'block' 
               }}>
@@ -206,7 +211,7 @@ export default function Register() {
             disabled={loading}
             style={{
               ...styles.submitBtn,
-              background: loading ? '#94a3b8' : '#800000',
+              background: loading ? 'rgba(196,160,82,0.3)' : '#c4a052',
               cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
@@ -223,20 +228,20 @@ export default function Register() {
 }
 
 const styles = {
-  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#eef2f6', padding: '20px', fontFamily: "'Inter', sans-serif" },
-  formCard: { background: '#fff', padding: '40px', borderRadius: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', width: '100%', maxWidth: '480px', border: '1px solid #e2e8f0' },
+  container: { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', width: '100vw', background: '#0a0a0b', padding: '20px', fontFamily: "'Inter', sans-serif", boxSizing: 'border-box' },
+  formCard: { background: '#161618', padding: '40px', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', width: '100%', maxWidth: '480px', border: '1px solid rgba(255,255,255,0.08)' },
   header: { textAlign: 'center', marginBottom: '32px' },
-  logo: { width: '40px', height: '40px', background: '#0f172a', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontWeight: 800 },
-  title: { fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 },
-  subtitle: { fontSize: '14px', color: '#64748b', marginTop: '4px' },
+  logo: { width: '44px', height: '44px', background: '#c4a052', color: '#0a0a0b', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', fontWeight: 800, fontSize: '18px', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' },
+  title: { fontSize: '24px', fontWeight: 800, color: '#e8e8eb', margin: 0, letterSpacing: '-0.5px' },
+  subtitle: { fontSize: '14px', color: '#6b6b70', marginTop: '6px' },
   form: { display: 'flex', flexDirection: 'column', gap: '16px' },
   inputGroup: { display: 'flex', flexDirection: 'column' },
-  label: { fontSize: '14px', fontWeight: 600, color: '#1e293b', marginBottom: '6px' },
-  input: { padding: '12px 16px', borderRadius: '12px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none', transition: 'border 0.2s' },
-  helpText: { marginTop: '6px', fontSize: '12px', color: '#64748b' },
-  submitBtn: { padding: '14px', borderRadius: '12px', border: 'none', color: '#fff', fontWeight: 700, fontSize: '16px', marginTop: '8px', transition: '0.3s' },
-  successBox: { padding: '12px', background: '#f0fdf4', color: '#16a34a', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #dcfce7' },
-  errorBox: { padding: '12px', background: '#fef2f2', color: '#ef4444', borderRadius: '10px', fontSize: '14px', textAlign: 'center', marginBottom: '20px', border: '1px solid #fee2e2' },
-  footerText: { textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#64748b' },
-  link: { color: '#800000', fontWeight: 700, textDecoration: 'none' }
+  label: { fontSize: '11px', fontWeight: 700, color: '#86868b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  input: { padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', outline: 'none', transition: 'border 0.2s', color: '#e8e8eb', backgroundColor: '#1d1d20' },
+  helpText: { marginTop: '6px', fontSize: '12px', color: '#555558' },
+  submitBtn: { padding: '14px', borderRadius: '12px', border: 'none', color: '#0a0a0b', fontWeight: 700, fontSize: '15px', marginTop: '8px', transition: '0.3s', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' },
+  successBox: { padding: '12px 16px', background: 'rgba(34,197,94,0.1)', color: '#3faa72', borderRadius: '10px', fontSize: '13px', textAlign: 'center', marginBottom: '20px', border: '1px solid rgba(34,197,94,0.25)' },
+  errorBox: { padding: '12px 16px', background: 'rgba(239,68,68,0.1)', color: '#dc4a4a', borderRadius: '10px', fontSize: '13px', textAlign: 'center', marginBottom: '20px', border: '1px solid rgba(239,68,68,0.25)' },
+  footerText: { textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#6b6b70' },
+  link: { color: '#d4b062', fontWeight: 700, textDecoration: 'none' }
 };

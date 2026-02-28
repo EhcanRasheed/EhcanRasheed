@@ -30,11 +30,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User no longer exists');
     }
 
-    // Role is intentionally removed as it no longer exists in your DB
     return {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
+      role: user.role,
     };
   }
 }

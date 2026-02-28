@@ -35,4 +35,7 @@ export class Profile {
 
   @Column({ type: 'timestamp', nullable: true })
   resetTokenExpiry: Date | null;
+
+  @Column({ type: 'varchar', default: 'user' })
+  role: string; // 'user' | 'admin'
 }

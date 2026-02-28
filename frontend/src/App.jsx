@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 
 // Import existing pages
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import Register from './pages/Register';
-// ✅ Import your new VerifyOtp page
 import VerifyOtp from './pages/VerifyOtp'; 
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -14,12 +14,18 @@ import Dashboard from './pages/Dashboard';
 import Chatbot from './pages/Chatbot';
 import Resume from './pages/Resume';
 import InterviewPreparation from './pages/InterviewPreparation';
-
-// Import missing account and enterprise pages
+import InterviewSession from './pages/InterviewSession';
+import InterviewResult from './pages/InterviewResult';
 import ChangeUsername from './pages/ChangeUsername';
 import ChangePassword from './pages/ChangePassword';
 import SubscriptionPlan from './pages/SubscriptionPlan';
 import HiringEase from './pages/HiringEase';
+import NotFound from './pages/NotFound';
+
+// Admin pages
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminBanks from './pages/AdminBanks';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -57,6 +63,28 @@ function AppRoutes() {
         path="/interview"
         element={isAuthenticated ? <InterviewPreparation /> : <Navigate to="/login" />}
       />
+      <Route
+        path="/interview/session/:sessionId"
+        element={isAuthenticated ? <InterviewSession /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/interview/result/:sessionId"
+        element={isAuthenticated ? <InterviewResult /> : <Navigate to="/login" />}
+      />
+
+      {/* Admin Routes */}
+      <Route
+        path="/admin"
+        element={isAuthenticated ? <AdminDashboard /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/admin/users"
+        element={isAuthenticated ? <AdminUsers /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/admin/banks"
+        element={isAuthenticated ? <AdminBanks /> : <Navigate to="/login" />}
+      />
 
       {/* Protected Account & Enterprise Routes */}
       <Route
@@ -77,7 +105,7 @@ function AppRoutes() {
       />
 
       {/* Fallback for unknown routes */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
@@ -85,9 +113,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <div className="workspace">
+            <AppRoutes />
+          </div>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }
