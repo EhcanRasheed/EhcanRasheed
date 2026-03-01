@@ -1,0 +1,6 @@
+# Ignore files and directories
+node_modules/
+built/
+cache/
+.env
+.DS_Store
