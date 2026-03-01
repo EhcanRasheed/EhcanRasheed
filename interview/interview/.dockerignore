@@ -1,0 +1,14 @@
+# Ignore the Dockerfile
+Dockerfile
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# Build output
+/dist
+
+# Environment variable files
+.env
