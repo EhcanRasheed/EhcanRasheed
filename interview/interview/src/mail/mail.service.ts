@@ -16,6 +16,9 @@ export class MailService {
         user: mailConfig.user,
         pass: mailConfig.pass, // Your 16-character App Password
       },
+      connectionTimeout: 5000,
+      greetingTimeout: 5000,
+      socketTimeout: 5000,
     });
   }
 

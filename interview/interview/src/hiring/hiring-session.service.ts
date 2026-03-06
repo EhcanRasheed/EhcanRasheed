@@ -719,15 +719,17 @@ export class HiringSessionService implements OnModuleInit {
     }
     await this.sessionRepo.save(session);
 
-    // Send email notification to hiring user
-    try {
-      await this.sendCandidateCompletionEmail(
-        session.hiringUser,
-        candidate,
-        evaluation,
-      );
-    } catch (e) {
-      console.error('Failed to send notification email:', e.message);
+    // Send email notification to hiring user (skip in production — SMTP blocked on Railway)
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        await this.sendCandidateCompletionEmail(
+          session.hiringUser,
+          candidate,
+          evaluation,
+        );
+      } catch (e) {
+        console.error('Failed to send notification email:', e.message);
+      }
     }
 
     return { message: 'Interview completed. Thank you!' };
