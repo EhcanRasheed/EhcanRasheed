@@ -1,13 +1,19 @@
-import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import pdf from 'pdf-parse-fork'; // ✅ Modern ESM-compatible import
 import Groq from 'groq-sdk';
+import { ResumeAnalysis } from './entity/resume-analysis.entity';
 
 @Injectable()
 export class ResumeService implements OnModuleInit {
   private groq: any;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(ResumeAnalysis) private analysisRepo: Repository<ResumeAnalysis>,
+  ) {}
 
   onModuleInit() {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
@@ -38,7 +44,7 @@ export class ResumeService implements OnModuleInit {
             content: `You are a professional ATS analyzer. Return ONLY a valid JSON object.
             Format:
             {
-              "overallScore": number,
+              "overallScore": number (0 to 100),
               "summary": "string",
               "strengths": ["string"],
               "gaps": ["string"],
@@ -111,4 +117,46 @@ Make these changes and your score should jump significantly.`
 
   return { reply: chatCompletion.choices[0]?.message?.content };
 }
+
+  async saveAnalysis(userId: number, data: { fileName: string; jobDescription: string; overallScore: number; summary?: string; strengths?: string[]; gaps?: string[]; chatMessages?: any[] }) {
+    const analysis = Object.assign(new ResumeAnalysis(), {
+      userId,
+      fileName: data.fileName,
+      jobDescription: data.jobDescription,
+      overallScore: data.overallScore,
+      summary: data.summary ?? null,
+      strengths: data.strengths ?? null,
+      gaps: data.gaps ?? null,
+      chatMessages: data.chatMessages ?? null,
+    });
+    return this.analysisRepo.save(analysis);
+  }
+
+  async listAnalyses(userId: number) {
+    return this.analysisRepo.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      select: ['id', 'fileName', 'jobDescription', 'overallScore', 'createdAt'],
+    });
+  }
+
+  async getAnalysis(userId: number, id: number) {
+    const analysis = await this.analysisRepo.findOne({ where: { id, userId } });
+    if (!analysis) throw new NotFoundException('Analysis not found');
+    return analysis;
+  }
+
+  async deleteAnalysis(userId: number, id: number) {
+    const analysis = await this.analysisRepo.findOne({ where: { id, userId } });
+    if (!analysis) throw new NotFoundException('Analysis not found');
+    await this.analysisRepo.remove(analysis);
+    return { deleted: true };
+  }
+
+  async updateAnalysis(userId: number, id: number, data: { chatMessages?: any[] }) {
+    const analysis = await this.analysisRepo.findOne({ where: { id, userId } });
+    if (!analysis) throw new NotFoundException('Analysis not found');
+    if (data.chatMessages !== undefined) analysis.chatMessages = data.chatMessages;
+    return this.analysisRepo.save(analysis);
+  }
 }

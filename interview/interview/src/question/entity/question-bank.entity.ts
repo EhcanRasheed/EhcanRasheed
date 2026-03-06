@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Profile } from '../../profile/entity/profile.entity';
 import { Question } from './question.entity';
+import { HiringUser } from '../../hiring/entity/hiring-user.entity';
 
 @Entity('question_bank')
 export class QuestionBank {
@@ -28,6 +29,9 @@ export class QuestionBank {
 
   @ManyToOne(() => Profile, { nullable: true, onDelete: 'SET NULL' })
   createdBy: Profile;
+
+  @ManyToOne(() => HiringUser, { nullable: true, onDelete: 'SET NULL' })
+  hiringCreatedBy: HiringUser;
 
   @OneToMany(() => Question, (q) => q.bank, { cascade: true })
   questions: Question[];

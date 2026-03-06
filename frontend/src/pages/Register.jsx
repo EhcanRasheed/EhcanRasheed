@@ -122,6 +122,7 @@ export default function Register() {
               value={formData.fullName}
               onChange={handleChange}
               required
+              autoFocus
             />
           </div>
 

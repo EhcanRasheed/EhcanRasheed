@@ -60,6 +60,7 @@ export default function ChangeUsername() {
               onChange={(e) => setNewUsername(e.target.value)}
               placeholder="Enter new username"
               required
+              autoFocus
             />
           </div>
 

@@ -13,6 +13,7 @@ import { InterviewModule } from './interview/interview.module';
 import { AnswerModule } from './answer/answer.module';
 import { ChatbotModule } from './chatbot/chatbot.module'; // ✅ Chatbot Added
 import { AdminModule } from './admin/admin.module'; // ✅ Admin Added
+import { HiringModule } from './hiring/hiring.module'; // ✅ Hiring Ease Added
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { AdminModule } from './admin/admin.module'; // ✅ Admin Added
     AnswerModule,
     ChatbotModule, // ✅ Registered Chatbot
     AdminModule,   // ✅ Registered Admin
+    HiringModule,  // ✅ Registered Hiring Ease
   ],
 })
 export class AppModule {}

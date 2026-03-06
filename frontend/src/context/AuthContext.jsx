@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem('accessToken'));
   const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('refreshToken'));
   const [user, setUser] = useState(null);
+  const [usageLimits, setUsageLimits] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const isAuthenticated = !!accessToken;
@@ -15,8 +16,18 @@ export const AuthProvider = ({ children }) => {
     const init = async () => {
       if (accessToken) {
         try {
-          const data = await authApi.getMe();
-          setUser(data.user || data);
+          const [meData, usageData] = await Promise.allSettled([
+            authApi.getMe(),
+            authApi.getUsage(),
+          ]);
+          if (meData.status === 'fulfilled') setUser(meData.value.user || meData.value);
+          if (usageData.status === 'fulfilled') setUsageLimits(usageData.value);
+          else if (meData.status === 'rejected') {
+            setAccessToken(null);
+            setRefreshToken(null);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+          }
         } catch (err) {
           console.error('Failed to fetch user:', err);
           setAccessToken(null);
@@ -45,8 +56,9 @@ export const AuthProvider = ({ children }) => {
     const data = await authApi.login({ email, password });
     saveTokens(data);
     if (data.accessToken) {
-      const me = await authApi.getMe();
-      setUser(me.user || me);
+      const [me, usage] = await Promise.allSettled([authApi.getMe(), authApi.getUsage()]);
+      if (me.status === 'fulfilled') setUser(me.value.user || me.value);
+      if (usage.status === 'fulfilled') setUsageLimits(usage.value);
     }
     return data;
   };
@@ -80,6 +92,13 @@ export const AuthProvider = ({ children }) => {
     setUser((prev) => (prev ? { ...prev, ...payload } : null));
   };
 
+  const refreshUsage = async () => {
+    try {
+      const data = await authApi.getUsage();
+      setUsageLimits(data);
+    } catch (_) {}
+  };
+
   const changeUsername = async (newUsername) => {
     if (!accessToken) throw new Error('Not authenticated');
     const data = await authApi.changeUsername(newUsername);
@@ -93,6 +112,7 @@ export const AuthProvider = ({ children }) => {
         accessToken,
         refreshToken,
         user,
+        usageLimits,
         loading,
         isAuthenticated,
         login,
@@ -104,6 +124,7 @@ export const AuthProvider = ({ children }) => {
         resetPassword,
         changePassword,
         updateUser,
+        refreshUsage,
         changeUsername,
       }}
     >

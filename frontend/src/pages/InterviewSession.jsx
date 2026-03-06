@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import { SkeletonText, SkeletonLine } from '../components/Skeleton';
 import * as interviewApi from '../api/interview';
 
 export default function InterviewSession() {
@@ -15,6 +16,7 @@ export default function InterviewSession() {
   const [answers, setAnswers] = useState({}); // { questionId: answerText }
   const [loading, setLoading] = useState(true);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [countdown, setCountdown] = useState(null); // null = not started, number = seconds left
 
   // ───────────── Voice state ─────────────
   const [isListening, setIsListening] = useState(false);
@@ -30,6 +32,9 @@ export default function InterviewSession() {
   const speedMenuRef = useRef(null);
   const pendingTranscriptRef = useRef('');
   const baseAnswerRef = useRef(''); // answer text BEFORE mic started
+  const wasListeningRef = useRef(false);
+  const latestAnswerRef = useRef('');
+  useEffect(() => { latestAnswerRef.current = answer; }, [answer]);
 
   // ───────────── Speech Recognition setup ─────────────
   useEffect(() => {
@@ -84,11 +89,30 @@ export default function InterviewSession() {
     };
   }, []);
 
+  // Auto-save & advance when mic turns off
+  useEffect(() => {
+    if (wasListeningRef.current && !isListening && latestAnswerRef.current.trim()) {
+      goNext();
+    }
+    wasListeningRef.current = isListening;
+  }, [isListening]);
+
   // Cancel speech on unmount / page refresh
   useEffect(() => {
     const stopSpeech = () => window.speechSynthesis.cancel();
     window.addEventListener('beforeunload', stopSpeech);
     return () => { stopSpeech(); window.removeEventListener('beforeunload', stopSpeech); };
+  }, []);
+
+  // Pause speech when tab becomes hidden
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        window.speechSynthesis.cancel();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
   // Close speed menu on outside click
@@ -190,13 +214,14 @@ export default function InterviewSession() {
     }
   };
 
-  // Auto-read question when it changes
+  // Auto-read question when it changes (only after countdown finishes)
   useEffect(() => {
+    if (countdown !== null && countdown > 0) return;
     if (questions.length > 0 && questions[currentIdx]) {
       const q = questions[currentIdx];
       speakText(`Question ${currentIdx + 1}. ${q.text}`, true);
     }
-  }, [currentIdx, questions.length, autoSpeak]);
+  }, [currentIdx, questions.length, autoSpeak, countdown]);
 
   // ───────────── Original session logic ─────────────
 
@@ -206,12 +231,20 @@ export default function InterviewSession() {
     try {
       const data = await interviewApi.getSessionQuestions(sessionId);
       setQuestions(data);
+      setCountdown(5); // Start 5-second countdown
     } catch (e) {
       alert('Failed to load questions');
       navigate('/interview');
     }
     setLoading(false);
   };
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (countdown === null || countdown <= 0) return;
+    const t = setTimeout(() => setCountdown(countdown - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
 
   const currentQ = questions[currentIdx];
 
@@ -268,7 +301,21 @@ export default function InterviewSession() {
     setAnswer(answers[questions[idx].id] || '');
   };
 
-  if (loading) return <AppLayout activePage="interview"><p style={{ color: '#6b6b70', textAlign: 'center', padding: 60 }}>Loading session…</p></AppLayout>;
+  if (loading) return <AppLayout activePage="interview"><div style={{ padding: 40 }}><SkeletonLine width="60%" height={20} style={{ marginBottom: 16 }} /><SkeletonText lines={4} /><SkeletonLine width="100%" height={120} style={{ marginTop: 20 }} /></div></AppLayout>;
+
+  if (countdown > 0) {
+    return (
+      <AppLayout activePage="interview">
+        <div style={s.countdownWrap}>
+          <p style={s.countdownLabel}>Your interview starts in</p>
+          <div style={s.countdownCircle}>
+            <span style={s.countdownNum}>{countdown}</span>
+          </div>
+          <p style={s.countdownHint}>Get ready — questions will appear automatically</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const progress = Object.keys(answers).length;
   const total = questions.length;
@@ -447,6 +494,12 @@ export default function InterviewSession() {
 }
 
 const s = {
+  // Countdown
+  countdownWrap: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 24 },
+  countdownLabel: { color: '#6b6b70', fontSize: 16, fontWeight: 600, margin: 0, textTransform: 'uppercase', letterSpacing: 1 },
+  countdownCircle: { width: 140, height: 140, borderRadius: '50%', background: 'rgba(196,160,82,0.10)', border: '3px solid #c4a052', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  countdownNum: { fontSize: 64, fontWeight: 900, color: '#c4a052' },
+  countdownHint: { color: '#6b6b70', fontSize: 13, margin: 0 },
   // Voice controls
   voiceBar: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap', background: '#161618', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 16px' },
   voiceToggle: { background: '#23232a', border: '1px solid rgba(255,255,255,0.08)', color: '#6b6b70', padding: '5px 10px', borderRadius: 8, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.15s' },

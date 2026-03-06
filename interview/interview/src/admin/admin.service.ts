@@ -10,6 +10,7 @@ import { Profile } from '../profile/entity/profile.entity';
 import { QuestionBank } from '../question/entity/question-bank.entity';
 import { Question } from '../question/entity/question.entity';
 import { BankFeedback } from '../question/entity/bank-feedback.entity';
+import { PaymentRequest, PaymentStatus } from './entity/payment.entity';
 
 @Injectable()
 export class AdminService {
@@ -22,6 +23,8 @@ export class AdminService {
     private readonly questionRepo: Repository<Question>,
     @InjectRepository(BankFeedback)
     private readonly feedbackRepo: Repository<BankFeedback>,
+    @InjectRepository(PaymentRequest)
+    private readonly paymentRepo: Repository<PaymentRequest>,
   ) {}
 
   // ───────────── User Management ─────────────
@@ -36,6 +39,7 @@ export class AdminService {
       email: u.email,
       phoneNumber: u.phoneNumber,
       role: u.role,
+      tier: (u as any).tier || 'free',
       isActive: u.isActive,
     }));
   }
@@ -342,4 +346,57 @@ export class AdminService {
       .getRawMany();
     return result;
   }
+  // --- Payment Management ---
+  async getUserApprovedTierAndPending(userId: number) {
+    const user = await this.profileRepo.findOne({ where: { id: userId } });
+    const pending = await this.paymentRepo.findOne({ where: { userId, status: PaymentStatus.PENDING } });
+    return { approvedTier: user ? (user as any).tier || 'free' : 'free', pending };
+  }
+
+  async submitPaymentRequest(userId: number, email: string, dto: any) {
+    const req = this.paymentRepo.create({
+      userId,
+      userEmail: email,
+      requestedTier: dto.requestedTier,
+      paymentMethod: dto.paymentMethod,
+      screenshotBase64: dto.screenshotBase64,
+      status: PaymentStatus.PENDING,
+    });
+    return this.paymentRepo.save(req);
+  }
+
+  async getAllPayments() {
+    return this.paymentRepo.find({ order: { createdAt: 'DESC' } });
+  }
+
+  async approvePayment(id: number) {
+    const payment = await this.paymentRepo.findOne({ where: { id } });
+    if (!payment) throw new NotFoundException('Payment not found');
+    payment.status = PaymentStatus.APPROVED;
+    await this.paymentRepo.save(payment);
+
+    // Update the user's tier in their profile
+    const user = await this.profileRepo.findOne({ where: { id: payment.userId } });
+    if (user) {
+      (user as any).tier = payment.requestedTier;
+      await this.profileRepo.save(user);
+    }
+
+    return payment;
+  }
+
+  async rejectPayment(id: number) {
+    const payment = await this.paymentRepo.findOne({ where: { id } });
+    if (!payment) throw new NotFoundException('Payment not found');
+    payment.status = PaymentStatus.REJECTED;
+    return this.paymentRepo.save(payment);
+  }
+
+  async deletePayment(id: number) {
+    const payment = await this.paymentRepo.findOne({ where: { id } });
+    if (!payment) throw new NotFoundException('Payment not found');
+    await this.paymentRepo.remove(payment);
+    return { message: 'Deleted' };
+  }
+
 }

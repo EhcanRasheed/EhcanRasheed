@@ -1,16 +1,22 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import { SkeletonCardGrid } from '../components/Skeleton';
 import * as interviewApi from '../api/interview';
+import { useAuth } from '../context/AuthContext';
 
 export default function InterviewPreparation() {
   const navigate = useNavigate();
+  const { usageLimits, refreshUsage } = useAuth();
   const [banks, setBanks] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [starting, setStarting] = useState(false);
+  const [startingBankId, setStartingBankId] = useState(null);
   const [tab, setTab] = useState('banks'); // 'banks' | 'history'
   const [filterCat, setFilterCat] = useState('All');
+
+  const interviewUsage = usageLimits?.usage?.interviews;
+  const atLimit = interviewUsage && interviewUsage.limit !== null && interviewUsage.used >= interviewUsage.limit;
 
   useEffect(() => {
     loadData();
@@ -30,14 +36,23 @@ export default function InterviewPreparation() {
   };
 
   const handleStart = async (bankId) => {
-    setStarting(true);
+    if (atLimit) {
+      navigate('/subscription');
+      return;
+    }
+    setStartingBankId(bankId);
     try {
       const data = await interviewApi.startSession(bankId);
+      await refreshUsage();
       navigate(`/interview/session/${data.sessionId}`);
     } catch (e) {
-      alert(e.response?.data?.message || 'Failed to start session');
+      if (e.response?.status === 403) {
+        navigate('/subscription');
+      } else {
+        alert(e.response?.data?.message || 'Failed to start session');
+      }
     }
-    setStarting(false);
+    setStartingBankId(null);
   };
 
   const handleDeleteSession = async (e, sessionId) => {
@@ -56,7 +71,20 @@ export default function InterviewPreparation() {
       <div style={s.hero}>
         <h1 style={s.heroTitle}>Interview Preparation</h1>
         <p style={s.heroSub}>Choose a question bank to begin a mock interview, or review past sessions.</p>
+        {interviewUsage && (
+          <div style={s.usagePill}>
+            {interviewUsage.limit === null
+              ? '∞ Unlimited interviews'
+              : `${interviewUsage.used} / ${interviewUsage.limit} interviews used this month`}
+          </div>
+        )}
       </div>
+      {atLimit && (
+        <div style={s.limitBanner}>
+          You've used all <strong>{interviewUsage.limit}</strong> mock interviews this month.&nbsp;
+          <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/subscription')}>Upgrade your plan →</span>
+        </div>
+      )}
 
       {/* Tabs */}
       <div style={s.tabs}>
@@ -65,7 +93,7 @@ export default function InterviewPreparation() {
       </div>
 
       {loading ? (
-        <p style={s.loading}>Loading…</p>
+        <SkeletonCardGrid count={6} />
       ) : tab === 'banks' ? (
         <>
           {/* Category filter */}
@@ -94,8 +122,12 @@ export default function InterviewPreparation() {
               </div>
               <div style={s.cardFooter}>
                 <span style={s.qCount}>{b.questionCount} questions</span>
-                <button style={s.startBtn} onClick={() => handleStart(b.id)} disabled={starting}>
-                  {starting ? 'Starting…' : 'Start Interview →'}
+                <button
+                  style={atLimit ? s.limitedBtn : s.startBtn}
+                  onClick={() => handleStart(b.id)}
+                  disabled={startingBankId !== null}
+                >
+                  {atLimit ? 'Upgrade to Start' : startingBankId === b.id ? 'Starting…' : 'Start Interview →'}
                 </button>
               </div>
             </div>
@@ -139,6 +171,8 @@ const s = {
   hero: { textAlign: 'center', marginBottom: 36 },
   heroTitle: { fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, color: '#e8e8eb', margin: '0 0 10px' },
   heroSub: { color: '#6b6b70', fontSize: 14, lineHeight: 1.7, maxWidth: 480, margin: '0 auto' },
+  usagePill: { display: 'inline-block', marginTop: 12, background: 'rgba(196,160,82,0.12)', border: '1px solid rgba(196,160,82,0.25)', color: '#c4a052', fontSize: 12, fontWeight: 600, padding: '4px 14px', borderRadius: 20 },
+  limitBanner: { background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', color: '#e74c3c', fontSize: 14, padding: '14px 20px', borderRadius: 12, marginBottom: 24, lineHeight: 1.6 },
   tabs: { display: 'flex', gap: 0, marginBottom: 28, borderBottom: '1px solid rgba(255,255,255,0.07)' },
   tab: { background: 'transparent', border: 'none', color: '#6b6b70', padding: '10px 24px', cursor: 'pointer', fontSize: 14, fontWeight: 600, borderBottom: '2px solid transparent', transition: 'all 0.2s' },
   tabActive: { background: 'transparent', border: 'none', color: '#c4a052', padding: '10px 24px', cursor: 'pointer', fontSize: 14, fontWeight: 700, borderBottom: '2px solid #c4a052' },
@@ -157,6 +191,7 @@ const s = {
   cardFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
   qCount: { fontSize: 12, color: '#6b6b70' },
   startBtn: { background: '#c4a052', color: '#0a0a0b', border: 'none', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 700 },
+  limitedBtn: { background: 'rgba(231,76,60,0.15)', color: '#e74c3c', border: '1px solid rgba(231,76,60,0.3)', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 700 },
   historyList: { display: 'flex', flexDirection: 'column', gap: 10 },
   historyItem: { display: 'flex', alignItems: 'center', background: '#161618', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: '16px 20px', cursor: 'pointer', transition: 'border-color 0.2s', gap: 16 },
   histColLeft: { flex: 1 },

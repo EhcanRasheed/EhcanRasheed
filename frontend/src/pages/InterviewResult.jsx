@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import AppLayout from '../components/AppLayout';
+import { SkeletonCardGrid, SkeletonText } from '../components/Skeleton';
 import * as interviewApi from '../api/interview';
 
 export default function InterviewResult() {
@@ -167,7 +168,7 @@ export default function InterviewResult() {
     }
   };
 
-  if (loading) return <AppLayout activePage="interview"><p style={{ color: '#6b6b70', textAlign: 'center', padding: 60 }}>Loading results…</p></AppLayout>;
+  if (loading) return <AppLayout activePage="interview"><div style={{ padding: 40 }}><SkeletonText lines={2} style={{ marginBottom: 24 }} /><SkeletonCardGrid count={3} /></div></AppLayout>;
   if (!data) return null;
 
   const evaluation = data.evaluation;

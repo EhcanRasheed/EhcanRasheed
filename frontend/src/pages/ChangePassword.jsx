@@ -68,6 +68,7 @@ export default function ChangePassword() {
               onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
               placeholder="Enter current password"
               required
+              autoFocus
             />
             <button type="button" onClick={() => setShowCurrent(!showCurrent)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#6b6b70', cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1 }}>{showCurrent ? '🙈' : '👁️'}</button>
             </div>

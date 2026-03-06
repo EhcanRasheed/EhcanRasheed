@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { HiHome, HiDocumentText, HiChatBubbleLeftRight, HiAcademicCap } from 'react-icons/hi2';
 import { HiOutlineUser, HiOutlineLockClosed, HiOutlineCreditCard, HiOutlineArrowRightOnRectangle } from 'react-icons/hi2';
 import { HiRocketLaunch, HiCog6Tooth, HiShieldCheck } from 'react-icons/hi2';
@@ -18,7 +19,7 @@ import { HiRocketLaunch, HiCog6Tooth, HiShieldCheck } from 'react-icons/hi2';
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Home', key: 'dashboard', icon: HiHome },
-  { to: '/resume', label: 'Resume Lab', key: 'resume', icon: HiDocumentText },
+  { to: '/resume', label: 'Resume Analysis', key: 'resume', icon: HiDocumentText },
   { to: '/chatbot', label: 'Chatbot', key: 'chatbot', icon: HiChatBubbleLeftRight },
   { to: '/interview', label: 'Interview Preparation', key: 'interview', icon: HiAcademicCap },
 ];
@@ -68,9 +69,11 @@ export default function AppLayout({
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { isMobile } = useWindowSize();
   const [isExpanded, setIsExpanded] = useState(sidebarMode === 'fixed');
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -109,9 +112,26 @@ export default function AppLayout({
 
   return (
     <div className="workspace" style={styles.workspace}>
+      {/* Mobile hamburger button */}
+      <button
+        className="hamburger-btn"
+        aria-label="Open navigation"
+        onClick={() => setMobileNavOpen(true)}
+      >
+        ☰
+      </button>
+
+      {/* Mobile nav overlay backdrop */}
+      {isMobile && mobileNavOpen && (
+        <div
+          className="mobile-nav-overlay"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className="sidebar"
+        className={`sidebar${isMobile && mobileNavOpen ? ' mobile-open' : ''}`}
         style={sidebarDynamicStyle}
         onMouseEnter={isHoverMode ? () => setIsExpanded(true) : undefined}
         onMouseLeave={
@@ -124,9 +144,20 @@ export default function AppLayout({
           style={{
             ...styles.sidebarHeader,
             cursor: isHoverMode ? 'pointer' : 'default',
+            position: 'relative',
           }}
           onClick={isHoverMode ? () => navigate('/dashboard') : undefined}
         >
+          {/* Mobile close button */}
+          {isMobile && (
+            <button
+              onClick={(e) => { e.stopPropagation(); setMobileNavOpen(false); }}
+              style={{ position: 'absolute', top: 0, right: 0, background: 'none', border: 'none', color: '#86868b', cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: 4 }}
+              aria-label="Close navigation"
+            >
+              ✕
+            </button>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={styles.logoBox}>HC</div>
             {(isExpanded || !isHoverMode) && (
@@ -138,7 +169,7 @@ export default function AppLayout({
           )}
         </div>
 
-        <nav style={styles.sideNav}>
+        <nav style={styles.sideNav} onClick={isMobile ? () => setMobileNavOpen(false) : undefined}>
           {NAV_ITEMS.map((item) =>
             isExpanded || !isHoverMode ? (
               <NavLink

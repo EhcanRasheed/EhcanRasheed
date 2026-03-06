@@ -38,4 +38,20 @@ export class Profile {
 
   @Column({ type: 'varchar', default: 'user' })
   role: string; // 'user' | 'admin'
+
+  @Column({ type: 'varchar', default: 'free' })
+  tier: string; // 'free' | 'basic' | 'Professional' | 'Elite'
+
+  // ─── Monthly usage counters (reset every 30 days) ───
+  @Column({ type: 'int', default: 0 })
+  interviewsThisMonth: number;
+
+  @Column({ type: 'int', default: 0 })
+  resumesThisMonth: number;
+
+  @Column({ type: 'int', default: 0 })
+  chatbotMessagesThisMonth: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  usageResetAt: Date | null;
 }

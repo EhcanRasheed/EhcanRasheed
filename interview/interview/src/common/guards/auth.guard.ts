@@ -4,7 +4,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ModuleRef } from '@nestjs/core';
 import { Session } from '../../auth/entity/session.entity';
 import { Repository } from 'typeorm';
-import bcrypt from 'node_modules/bcryptjs';
+import * as bcrypt from 'bcryptjs';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -20,8 +21,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (!result) return false;
 
     if (!this.sessionRepo) {
-      this.sessionRepo = this.moduleRef.get('SessionRepository', { strict: false });
-      if (!this.sessionRepo) {
+      try {
+        this.sessionRepo = this.moduleRef.get(getRepositoryToken(Session) as string, { strict: false });
+      } catch {
         throw new UnauthorizedException('Session repository not available');
       }
     }
@@ -33,16 +35,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     if (!user || !token) throw new UnauthorizedException('Token missing');
 
-    // Fetch active sessions
+    // Fetch active sessions (newest first, limit 5 for performance)
     const sessions = await this.sessionRepo.find({
-      where: { user: { id: user.sub }, isActive: true },
+      where: { user: { id: user.id ?? user.sub }, isActive: true },
+      order: { createdAt: 'DESC' },
+      take: 5,
     });
 
     if (!sessions || sessions.length === 0) {
       throw new UnauthorizedException('Session expired');
     }
 
-    // **Check if the token matches any active session**
+    // Check if the token matches any active session
     let match = false;
     for (const s of sessions) {
       if (s.accessToken && (await bcrypt.compare(token, s.accessToken))) {

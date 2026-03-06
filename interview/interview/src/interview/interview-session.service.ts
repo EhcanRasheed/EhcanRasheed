@@ -15,6 +15,7 @@ import { QuestionBank } from '../question/entity/question-bank.entity';
 import { Question } from '../question/entity/question.entity';
 import { BankFeedback } from '../question/entity/bank-feedback.entity';
 import { Profile } from '../profile/entity/profile.entity';
+import { UsageService } from '../common/usage.service';
 
 @Injectable()
 export class InterviewSessionService implements OnModuleInit {
@@ -32,6 +33,7 @@ export class InterviewSessionService implements OnModuleInit {
     private readonly questionRepo: Repository<Question>,
     @InjectRepository(BankFeedback)
     private readonly feedbackRepo: Repository<BankFeedback>,
+    private readonly usageService: UsageService,
   ) {}
 
   onModuleInit() {
@@ -79,6 +81,7 @@ export class InterviewSessionService implements OnModuleInit {
 
   /** Start a new interview session */
   async startSession(userId: number, bankId: string) {
+    await this.usageService.checkAndIncrement(userId, 'interviews');
     const bank = await this.bankRepo.findOne({ where: { id: bankId } });
     if (!bank) throw new NotFoundException('Question Bank not found');
 

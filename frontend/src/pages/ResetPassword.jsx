@@ -228,7 +228,8 @@ export default function ResetPassword() {
               onChange={(e) => setPassword(e.target.value)} 
               type={showPassword ? 'text' : 'password'} 
               placeholder="At least 7 characters"
-              required 
+              required
+              autoFocus 
               disabled={!token || loading}
             />
             <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#6b6b70', cursor: 'pointer', fontSize: 16, padding: 0, lineHeight: 1 }}>{showPassword ? '🙈' : '👁️'}</button>

@@ -19,6 +19,10 @@ export class MailService {
     });
   }
 
+  public async sendGenericMail(to: string, subject: string, html: string) {
+    return this.sendMail(to, subject, html);
+  }
+
   private async sendMail(to: string, subject: string, html: string) {
     try {
       await this.transporter.sendMail({

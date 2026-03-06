@@ -18,7 +18,7 @@ const styles = {
   form: {
     backgroundColor: '#161618',
     borderRadius: '12px',
-    padding: '48px',
+    padding: 'clamp(24px, 6vw, 48px)',
     boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     maxWidth: '440px',
     width: '100%',
@@ -248,7 +248,8 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)} 
               type="email" 
               placeholder="name@company.com"
-              required 
+              required
+              autoFocus 
             />
           </div>
           <div style={styles.inputGroup}>

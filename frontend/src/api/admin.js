@@ -13,6 +13,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  },
+);
+
 // ─── User Management ───
 export const getAllUsers = async () => {
   const res = await api.get('/admin/users');
@@ -89,6 +101,27 @@ export const getBankFeedback = async (bankId) => {
 /** Get feedback counts for all banks */
 export const getAllBankFeedbackCounts = async () => {
   const res = await api.get('/admin/feedback/counts');
+  return res.data;
+};
+
+// ─── Payment Management ───
+export const getPayments = async () => {
+  const res = await api.get('/payments');
+  return res.data;
+};
+
+export const approvePayment = async (id) => {
+  const res = await api.patch(`/payments/${id}/approve`);
+  return res.data;
+};
+
+export const rejectPayment = async (id) => {
+  const res = await api.patch(`/payments/${id}/reject`);
+  return res.data;
+};
+
+export const deletePayment = async (id) => {
+  const res = await api.delete(`/payments/${id}`);
   return res.data;
 };
 

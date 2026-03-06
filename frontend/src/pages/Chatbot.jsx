@@ -2,6 +2,8 @@
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import AppLayout from '../components/AppLayout';
+import { useAuth } from '../context/AuthContext';
+import { saveChatSession, listChatSessions, getChatSession, deleteChatSession } from '../api/chatbot';
 
 /* ─── Typing animation component ─── */
 function TypeWriter({ text, renderFn, speed = 12, onComplete }) {
@@ -59,6 +61,9 @@ function ThinkingDots() {
 
 export default function Chatbot() {
   const bottomRef = useRef(null);
+  const { usageLimits, refreshUsage } = useAuth();
+  const chatbotUsage = usageLimits?.usage?.chatbot;
+  const atLimit = chatbotUsage && chatbotUsage.limit !== null && chatbotUsage.used >= chatbotUsage.limit;
 
   const [messages, setMessages] = useState([
     {
@@ -83,6 +88,9 @@ export default function Chatbot() {
   const [evaluation, setEvaluation] = useState(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [sessionStart] = useState(() => new Date());
+  const [tab, setTab] = useState('chat');
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const speedMenuRef = useRef(null);
   const recognitionRef = useRef(null);
   const silenceTimerRef = useRef(null);
@@ -255,6 +263,88 @@ export default function Chatbot() {
 
   const filteredVoices = availableVoices.filter(v => /^en/i.test(v.lang));
 
+  // Load history on mount
+  useEffect(() => { loadHistory(); }, []);
+
+  const loadHistory = async () => {
+    setHistoryLoading(true);
+    try { setHistory(await listChatSessions()); } catch (_) {}
+    setHistoryLoading(false);
+  };
+
+  const handleLoadSession = async (id) => {
+    try {
+      const session = await getChatSession(id);
+      setMessages(session.messages || []);
+      setEvaluation(session.evaluation || null);
+      if (session.evaluation) setShowSummary(true);
+      setTab('chat');
+    } catch (_) {}
+  };
+
+  const handleDeleteHistory = async (e, id) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this chat session?')) return;
+    try {
+      await deleteChatSession(id);
+      setHistory(prev => prev.filter(h => h.id !== id));
+    } catch (_) {}
+  };
+
+  const handleExportHistoryPDF = async (e, id) => {
+    e.stopPropagation();
+    try {
+      const session = await getChatSession(id);
+      const msgs = session.messages || [];
+      const ev = session.evaluation || {};
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const pw = doc.internal.pageSize.getWidth();
+      const ph = doc.internal.pageSize.getHeight();
+      const mx = 18; const cw = pw - 2 * mx; let y = 0;
+      const drawBg = () => { doc.setFillColor(10, 10, 11); doc.rect(0, 0, pw, ph, 'F'); };
+      const ensureSpace = (need = 8) => { if (y + need > ph - 14) { doc.addPage(); drawBg(); y = mx; } };
+      const writeLines = (text, x, size, rgb, style = 'normal', maxW) => {
+        doc.setFontSize(size); doc.setFont('helvetica', style); doc.setTextColor(...rgb);
+        const lines = doc.splitTextToSize(String(text || ''), maxW || (cw - (x - mx)));
+        const lh = size * 0.42 + 0.8;
+        for (const line of lines) { ensureSpace(lh); doc.text(line, x, y); y += lh; }
+      };
+      const goldRule = () => { ensureSpace(6); doc.setDrawColor(196, 160, 82); doc.setLineWidth(0.4); doc.line(mx, y, pw - mx, y); y += 5; };
+
+      drawBg(); y = mx + 6;
+      doc.setFontSize(20); doc.setFont('helvetica', 'bold'); doc.setTextColor(232, 232, 235);
+      doc.text('HireCraft Interview Transcript', pw / 2, y, { align: 'center' }); y += 8; goldRule();
+      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(107, 107, 112);
+      doc.text(`${new Date(session.createdAt).toLocaleDateString()}`, pw / 2, y, { align: 'center' }); y += 10;
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(196, 160, 82);
+      doc.text(`${session.questionCount || '?'} Questions  •  ${session.durationMinutes || '--'} Minutes`, pw / 2, y, { align: 'center' }); y += 10;
+
+      if (ev.score != null) {
+        goldRule();
+        writeLines('PERFORMANCE EVALUATION', mx, 13, [232, 232, 235], 'bold'); y += 2;
+        writeLines(`Score: ${ev.score} / 10`, mx, 16, [196, 160, 82], 'bold'); y += 2;
+        if (ev.summary) { writeLines(ev.summary, mx, 10, [160, 160, 165]); y += 3; }
+        if (ev.strengths?.length) { writeLines('STRENGTHS', mx, 9, [107, 107, 112], 'bold'); y += 1; for (const s of ev.strengths) writeLines(`•  ${s}`, mx + 4, 10, [200, 200, 204]); y += 3; }
+        if (ev.improvements?.length) { writeLines('AREAS TO IMPROVE', mx, 9, [107, 107, 112], 'bold'); y += 1; for (const s of ev.improvements) writeLines(`•  ${s}`, mx + 4, 10, [200, 200, 204]); y += 3; }
+      }
+
+      goldRule();
+      writeLines('CONVERSATION', mx, 13, [232, 232, 235], 'bold'); y += 4;
+      for (const m of msgs) {
+        const isUser = m.role === 'user';
+        ensureSpace(12);
+        writeLines(isUser ? 'You' : 'HireCraft Mentor', mx, 9, isUser ? [196, 160, 82] : [160, 160, 165], 'bold');
+        writeLines((m.content || '').replace(/\*\*/g, ''), mx + 2, 10, [200, 200, 204]); y += 3;
+      }
+
+      y += 4;
+      doc.setDrawColor(50, 50, 55); doc.setLineWidth(0.2); doc.line(mx, y, pw - mx, y); y += 4;
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(107, 107, 112);
+      doc.text('Generated by HireCraft — AI Interview Preparation Platform', pw / 2, y, { align: 'center' });
+      doc.save(`HireCraft_Transcript_${new Date(session.createdAt).toISOString().slice(0, 10)}.pdf`);
+    } catch (_) {}
+  };
+
   // Derived values
   const questionCount = messages.filter(m => m.role === 'user').length;
   const sessionDuration = Math.max(1, Math.round((Date.now() - sessionStart.getTime()) / 60000));
@@ -418,7 +508,20 @@ export default function Chatbot() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setEvaluation({ score: data.score, strengths: data.strengths, improvements: data.improvements, summary: data.summary });
+        const evalData = { score: data.score, strengths: data.strengths, improvements: data.improvements, summary: data.summary };
+        setEvaluation(evalData);
+        // Save session to backend
+        try {
+          await saveChatSession({
+            messages,
+            questionCount: messages.filter(m => m.role === 'user').length,
+            score: data.score,
+            evaluation: evalData,
+            durationMinutes: Math.max(1, Math.round((Date.now() - sessionStart.getTime()) / 60000)),
+            title: (messages.find(m => m.role === 'user')?.content || '').slice(0, 80) || 'Interview Session',
+          });
+          loadHistory();
+        } catch (_) {}
       } else {
         setEvaluation({ score: null, strengths: [], improvements: [], summary: 'Could not generate evaluation. Try again later.' });
       }
@@ -443,6 +546,11 @@ export default function Chatbot() {
   const sendMessage = async () => {
     if (!input.trim() || isProcessing) return;
 
+    if (atLimit) {
+      navigate('/subscription');
+      return;
+    }
+
     const userText = input.trim();
     const history = messages.slice(1).map(m => ({
       role: m.role === 'user' ? 'user' : 'assistant',
@@ -454,18 +562,25 @@ export default function Chatbot() {
     setIsProcessing(true);
 
     try {
+      const token = localStorage.getItem('accessToken');
       const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/chatbot/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         credentials: 'include',
         body: JSON.stringify({ message: userText, history }),
       });
 
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 403) {
+          setMessages(prev => [...prev, { role: 'bot', content: data.message || 'Monthly chatbot limit reached. Please upgrade your plan.', time: new Date() }]);
+          await refreshUsage();
+          return;
+        }
         setMessages(prev => [...prev, { role: 'bot', content: data.message || 'Error communicating with AI.', time: new Date() }]);
         return;
       }
+      await refreshUsage();
       setMessages(prev => [...prev, { role: 'bot', content: data.response, time: new Date() }]);
       setIsTyping(true);
     } catch (err) {
@@ -482,6 +597,11 @@ export default function Chatbot() {
           <div>
             <h1 style={styles.pageTitle}>HireCraft Interview Mentor</h1>
             <p style={styles.subText}>Practical AI guidance for your next big opportunity.</p>
+            {chatbotUsage && (
+              <div style={{ display: 'inline-block', marginTop: 6, background: atLimit ? 'rgba(231,76,60,0.12)' : 'rgba(196,160,82,0.12)', border: `1px solid ${atLimit ? 'rgba(231,76,60,0.3)' : 'rgba(196,160,82,0.25)'}`, color: atLimit ? '#e74c3c' : '#c4a052', fontSize: 12, fontWeight: 600, padding: '3px 12px', borderRadius: 20 }}>
+                {chatbotUsage.limit === null ? '∞ Unlimited messages' : `${chatbotUsage.used} / ${chatbotUsage.limit} messages used this month`}
+              </div>
+            )}
           </div>
           <div style={styles.headerActions}>
             {questionCount > 0 && <span style={styles.questionBadge}>Q{questionCount}</span>}
@@ -490,7 +610,48 @@ export default function Chatbot() {
           </div>
         </div>
       </header>
+      {atLimit && (
+        <div style={{ background: 'rgba(231,76,60,0.1)', border: '1px solid rgba(231,76,60,0.3)', color: '#e74c3c', fontSize: 14, padding: '14px 20px', borderRadius: 12, marginBottom: 20, lineHeight: 1.6 }}>
+          You've used all <strong>{chatbotUsage.limit}</strong> chatbot messages this month.&nbsp;
+          <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/subscription')}>Upgrade your plan →</span>
+        </div>
+      )}
 
+      {/* Tab bar */}
+      <div style={styles.tabBar}>
+        <button style={tab === 'chat' ? styles.tabActive : styles.tab} onClick={() => setTab('chat')}>Chat</button>
+        <button style={tab === 'history' ? styles.tabActive : styles.tab} onClick={() => setTab('history')}>My History ({history.length})</button>
+      </div>
+
+      {tab === 'history' ? (
+        <div className="glass-card" style={{ ...styles.chatCard, padding: '24px' }}>
+          {historyLoading ? (
+            <p style={{ color: '#6b6b70', textAlign: 'center', marginTop: 40 }}>Loading...</p>
+          ) : history.length === 0 ? (
+            <p style={{ color: '#6b6b70', textAlign: 'center', marginTop: 40 }}>No past sessions yet. Start a conversation and end it to save.</p>
+          ) : (
+            <div style={{ overflowY: 'auto', flex: 1 }}>
+              {history.map(h => (
+                <div key={h.id} onClick={() => handleLoadSession(h.id)} style={styles.historyRow}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#e8e8eb', fontSize: 14, fontWeight: 600 }}>
+                      {h.title || `${h.questionCount} Questions`}
+                    </div>
+                    <div style={{ color: '#6b6b70', fontSize: 12, marginTop: 4 }}>
+                      {h.questionCount} Qs &middot; {h.durationMinutes || '--'} min &middot; {new Date(h.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  {h.score != null && (
+                    <span style={{ color: h.score >= 8 ? '#4ade80' : h.score >= 5 ? '#c4a052' : '#e05555', fontWeight: 800, fontSize: 18, marginRight: 12 }}>{h.score}/10</span>
+                  )}
+                  <button onClick={(e) => handleExportHistoryPDF(e, h.id)} style={{ background: 'rgba(196,160,82,.12)', color: '#c4a052', border: 'none', borderRadius: 6, padding: '5px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 600, marginRight: 6 }} title="Download PDF">📄</button>
+                  <button onClick={(e) => handleDeleteHistory(e, h.id)} style={styles.historyDeleteBtn} title="Delete">🗑</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
       <div className="glass-card" style={styles.chatCard}>
         {/* Voice controls bar */}
         <div style={styles.voiceBar}>
@@ -620,15 +781,22 @@ export default function Chatbot() {
             🎤
           </button>
           <input
-            style={styles.input}
+            style={{ ...styles.input, ...(atLimit ? { opacity: 0.4 } : {}) }}
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder={isListening ? 'Listening...' : 'Ask an interview question...'}
-            onKeyDown={e => e.key === 'Enter' && sendMessage()}
+            placeholder={atLimit ? 'Monthly limit reached — upgrade to continue...' : isListening ? 'Listening...' : 'Ask an interview question...'}
+            onKeyDown={e => e.key === 'Enter' && !atLimit && sendMessage()}
+            disabled={atLimit}
+            autoFocus
           />
-          <button id="chatbot-send-btn" style={styles.maroonBtnChat} onClick={sendMessage}>Send</button>
+          <button
+            id="chatbot-send-btn"
+            style={{ ...styles.maroonBtnChat, ...(atLimit ? { background: 'rgba(231,76,60,0.2)', color: '#e74c3c', cursor: 'pointer' } : {}) }}
+            onClick={atLimit ? () => navigate('/subscription') : sendMessage}
+          >{atLimit ? 'Upgrade' : 'Send'}</button>
         </div>
       </div>
+      )}
 
       {/* End Interview summary modal */}
       {showSummary && (
@@ -644,18 +812,26 @@ export default function Chatbot() {
                 <div style={styles.scoreCircle}>
                   <span style={{ ...styles.scoreNum, fontSize: '14px', color: '#86868b' }}>Evaluating...</span>
                 </div>
-              ) : evaluation?.score != null ? (
-                <div style={{
-                  ...styles.scoreCircle,
-                  borderColor: evaluation.score >= 8 ? '#4ade80' : evaluation.score >= 5 ? '#c4a052' : '#e05555',
-                }}>
-                  <span style={{
-                    ...styles.scoreNum,
-                    color: evaluation.score >= 8 ? '#4ade80' : evaluation.score >= 5 ? '#c4a052' : '#e05555',
-                  }}>{evaluation.score}</span>
-                  <span style={styles.scoreMax}>/10</span>
-                </div>
-              ) : null}
+              ) : evaluation?.score != null ? (() => {
+                const sc = evaluation.score;
+                const r = 40, circ = 2 * Math.PI * r;
+                const off = circ - (sc / 10) * circ;
+                const col = sc >= 8 ? '#4ade80' : sc >= 5 ? '#c4a052' : '#e05555';
+                return (
+                  <div style={{ position:'relative', width:90, height:90 }}>
+                    <svg viewBox="0 0 90 90" width="90" height="90" style={{ transform:'rotate(-90deg)' }}>
+                      <circle cx="45" cy="45" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
+                      <circle cx="45" cy="45" r={r} fill="none" stroke={col} strokeWidth="6"
+                        strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={off}
+                        style={{ transition:'stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)' }} />
+                    </svg>
+                    <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
+                      <span style={{ ...styles.scoreNum, color: col }}>{sc}</span>
+                      <span style={styles.scoreMax}>/10</span>
+                    </div>
+                  </div>
+                );
+              })() : null}
             </div>
 
             <div style={styles.smGrid}>
@@ -710,9 +886,14 @@ export default function Chatbot() {
 }
 
 const styles = {
-  topBar: { marginBottom: '32px' },
+  topBar: { marginBottom: '16px' },
   pageTitle: { fontSize: '2rem', fontWeight: 800, color: '#e8e8eb', letterSpacing: '-0.5px' },
   subText: { color: '#6b6b70', fontSize: '14px', marginTop: '6px' },
+  tabBar: { display: 'flex', gap: '0', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '16px' },
+  tab: { background: 'none', border: 'none', borderBottom: '2px solid transparent', padding: '10px 24px', cursor: 'pointer', color: '#6b6b70', fontSize: '14px', fontWeight: 600, fontFamily: "'Inter', sans-serif", transition: 'all 0.2s' },
+  tabActive: { background: 'none', border: 'none', borderBottom: '2px solid #c4a052', padding: '10px 24px', cursor: 'pointer', color: '#c4a052', fontSize: '14px', fontWeight: 600, fontFamily: "'Inter', sans-serif" },
+  historyRow: { display: 'flex', alignItems: 'center', padding: '14px 16px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.15s' },
+  historyDeleteBtn: { background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', opacity: 0.4, padding: '4px 8px', transition: 'opacity 0.2s' },
   chatCard: { background: '#161618', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', display: 'flex', flexDirection: 'column', height: '70vh', boxShadow: '0 2px 12px rgba(0,0,0,0.4)' },
   messagesArea: { flex: 1, padding: '32px', overflowY: 'auto' },
   bubble: { padding: '14px 18px', borderRadius: '10px', maxWidth: '75%', fontSize: '14px', lineHeight: '1.65', whiteSpace: 'pre-wrap' },

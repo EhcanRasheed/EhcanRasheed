@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
+import { SkeletonTable } from '../components/Skeleton';
 import * as adminApi from '../api/admin';
 
 export default function AdminUsers() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // id of user being edited
   const [form, setForm] = useState({});
   const [msg, setMsg] = useState('');
@@ -19,10 +21,12 @@ export default function AdminUsers() {
   }, [user, navigate]);
 
   const loadUsers = async () => {
+    setLoading(true);
     try {
       const data = await adminApi.getAllUsers();
       setUsers(data);
     } catch (e) { setMsg('Failed to load users'); }
+    setLoading(false);
   };
 
   const startEdit = (u) => {
@@ -63,6 +67,9 @@ export default function AdminUsers() {
 
       {msg && <div style={s.msg}>{msg}</div>}
 
+      {loading ? (
+        <SkeletonTable rows={6} cols={6} />
+      ) : (
       <div style={s.tableWrap}>
         <table style={s.table}>
           <thead>
@@ -125,6 +132,7 @@ export default function AdminUsers() {
           </tbody>
         </table>
       </div>
+      )}
     </AppLayout>
   );
 }

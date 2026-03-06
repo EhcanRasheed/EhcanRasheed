@@ -10,11 +10,13 @@ import { InterviewSessionService } from './interview-session.service';
 import { QuestionBank } from '../question/entity/question-bank.entity';
 import { Question } from '../question/entity/question.entity';
 import { BankFeedback } from '../question/entity/bank-feedback.entity';
+import { UsageModule } from '../common/usage.module';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([InterviewSession, SessionAnswer, QuestionBank, Question, BankFeedback]),
+    UsageModule,
   ],
   controllers: [InterviewController, InterviewSessionController],
   providers: [InterviewService, InterviewSessionService],

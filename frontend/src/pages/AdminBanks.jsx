@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AppLayout from '../components/AppLayout';
+import { SkeletonTable } from '../components/Skeleton';
 import * as adminApi from '../api/admin';
 
 export default function AdminBanks() {
@@ -10,6 +11,7 @@ export default function AdminBanks() {
   const fileRef = useRef(null);
 
   const [banks, setBanks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedBank, setSelectedBank] = useState(null);
   const [creating, setCreating] = useState(false);
   const [newBankName, setNewBankName] = useState('');
@@ -46,10 +48,12 @@ export default function AdminBanks() {
   }, [user, navigate]);
 
   const loadBanks = async () => {
+    setLoading(true);
     try {
       const data = await adminApi.getAllBanks();
       setBanks(data);
     } catch { setMsg('Failed to load banks'); }
+    setLoading(false);
   };
 
   const loadFeedbackCounts = async () => {
@@ -192,7 +196,7 @@ export default function AdminBanks() {
       <div style={s.layout}>
         {/* Bank List */}
         <div style={s.bankList}>
-          {banks.map((b) => (
+          {loading ? <SkeletonTable rows={5} cols={2} /> : banks.map((b) => (
             <div
               key={b.id}
               style={{ ...s.bankItem, ...(selectedBank?.id === b.id ? s.bankItemActive : {}), ...(b.isPublished ? {} : { opacity: 0.7 }) }}
@@ -218,7 +222,7 @@ export default function AdminBanks() {
               </div>
             </div>
           ))}
-          {banks.length === 0 && <p style={s.empty}>No banks yet. Create one above.</p>}
+          {!loading && banks.length === 0 && <p style={s.empty}>No banks yet. Create one above.</p>}
         </div>
 
         {/* Bank Detail */}

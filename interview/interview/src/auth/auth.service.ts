@@ -131,6 +131,12 @@ export class AuthService {
     if (!ok) throw new UnauthorizedException('Invalid credentials');
     if (!user.isActive) throw new UnauthorizedException('Please verify your email.');
 
+    // Deactivate all previous sessions for this user
+    await this.sessionRepo.update(
+      { user: { id: user.id }, isActive: true },
+      { isActive: false },
+    );
+
     const { accessToken, refreshToken } = this.signTokens(user);
     const hashedAccessToken = await bcrypt.hash(accessToken, 10);
 

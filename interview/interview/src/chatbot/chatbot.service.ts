@@ -1,12 +1,18 @@
-import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import Groq from 'groq-sdk';
+import { ChatbotSession } from './entity/chatbot-session.entity';
 
 @Injectable()
 export class ChatbotService implements OnModuleInit {
   private groq: any;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @InjectRepository(ChatbotSession) private sessionRepo: Repository<ChatbotSession>,
+  ) {}
 
   onModuleInit() {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
@@ -156,5 +162,39 @@ Output ONLY the raw JSON object. No wrapping, no code fences, no extra text.`,
       console.error('--- GROQ EVALUATE ERROR ---', error?.message);
       throw new InternalServerErrorException('AI evaluation is temporarily unavailable.');
     }
+  }
+
+  async saveSession(userId: number, data: { messages: any[]; questionCount: number; score?: number; evaluation?: any; durationMinutes?: number; title?: string }) {
+    const session = Object.assign(new ChatbotSession(), {
+      userId,
+      title: data.title || null,
+      messages: data.messages,
+      questionCount: data.questionCount,
+      score: data.score ?? null,
+      evaluation: data.evaluation ?? null,
+      durationMinutes: data.durationMinutes ?? null,
+    });
+    return this.sessionRepo.save(session);
+  }
+
+  async listSessions(userId: number) {
+    return this.sessionRepo.find({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+      select: ['id', 'title', 'questionCount', 'score', 'durationMinutes', 'createdAt'],
+    });
+  }
+
+  async getSession(userId: number, id: number) {
+    const session = await this.sessionRepo.findOne({ where: { id, userId } });
+    if (!session) throw new NotFoundException('Session not found');
+    return session;
+  }
+
+  async deleteSession(userId: number, id: number) {
+    const session = await this.sessionRepo.findOne({ where: { id, userId } });
+    if (!session) throw new NotFoundException('Session not found');
+    await this.sessionRepo.remove(session);
+    return { deleted: true };
   }
 }

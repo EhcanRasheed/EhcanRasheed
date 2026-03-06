@@ -17,7 +17,7 @@ const styles = {
     textAlign: 'center',
     backgroundColor: '#161618',
     borderRadius: '10px',
-    padding: '64px 48px',
+    padding: 'clamp(28px, 5vw, 64px) clamp(20px, 5vw, 48px)',
     boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     maxWidth: '1000px',
     width: '100%',
@@ -38,7 +38,7 @@ const styles = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   },
   title: {
-    fontSize: '44px',
+    fontSize: 'clamp(1.8rem, 5vw, 44px)',
     fontWeight: 800,
     color: '#e8e8eb',
     marginBottom: '16px',
@@ -149,7 +149,7 @@ export default function Welcome() {
         <div style={styles.featuresGrid}>
           {/* Module 1: Resume Analysis */}
           <div style={styles.feature}>
-            <span style={styles.featureTitle}>Resume Lab</span>
+            <span style={styles.featureTitle}>Resume Analysis</span>
             <span style={styles.featureDesc}>
               Precision structural audits and keyword optimization to outperform automated ATS filters.
             </span>

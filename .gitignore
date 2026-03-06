@@ -6,3 +6,4 @@ dist/
 *.rar
 *.docx
 .DS_Store
+.idea/

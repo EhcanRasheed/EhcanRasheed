@@ -1,0 +1,89 @@
+name: hirecraft
+region: lon   # London — closest to Pakistan. Options: nyc, lon, sgp (Singapore), fra (Frankfurt)
+
+databases:
+  - name: hirecraft-db
+    engine: PG           # PostgreSQL
+    version: "16"
+    size: db-s-dev-database   # Dev DB — $7/mo. Upgrade to db-s-1vcpu-1gb ($15/mo) when you go live
+    num_nodes: 1
+
+services:
+  - name: api
+    source_dir: interview/interview
+    github:
+      branch: main
+      deploy_on_push: true
+    build_command: npm ci && npm run build
+    run_command: node dist/main
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb  # Basic — $5/mo
+    http_port: 3000
+    health_check:
+      http_path: /
+    envs:
+      - key: NODE_ENV
+        value: "production"
+        scope: RUN_AND_BUILD_TIME
+      - key: PORT
+        value: "3000"
+        scope: RUN_TIME
+      - key: DATABASE_URL
+        value: ${hirecraft-db.DATABASE_URL}   # ← DO auto-fills this from the database above
+        scope: RUN_TIME
+      - key: JWT_SECRET
+        value: ""          # ← SET IN DO DASHBOARD — strong random string (openssl rand -hex 32)
+        type: SECRET
+        scope: RUN_TIME
+      - key: JWT_EXPIRES
+        value: "1h"
+        scope: RUN_TIME
+      - key: JWT_REFRESH_SECRET
+        value: ""          # ← SET IN DO DASHBOARD — different strong random string
+        type: SECRET
+        scope: RUN_TIME
+      - key: JWT_REFRESH_EXPIRES
+        value: "7d"
+        scope: RUN_TIME
+      - key: GROQ_API_KEY
+        value: ""          # ← SET IN DO DASHBOARD — from console.groq.com
+        type: SECRET
+        scope: RUN_TIME
+      - key: MAIL_HOST
+        value: "smtp.gmail.com"
+        scope: RUN_TIME
+      - key: MAIL_PORT
+        value: "587"
+        scope: RUN_TIME
+      - key: MAIL_USER
+        value: ""          # ← SET IN DO DASHBOARD — your Gmail address
+        type: SECRET
+        scope: RUN_TIME
+      - key: MAIL_PASS
+        value: ""          # ← SET IN DO DASHBOARD — Gmail App Password (myaccount.google.com/apppasswords)
+        type: SECRET
+        scope: RUN_TIME
+      - key: MAIL_FROM_EMAIL
+        value: ""          # ← SET IN DO DASHBOARD — same Gmail address
+        scope: RUN_TIME
+      - key: MAIL_FROM_NAME
+        value: "HireCraft"
+        scope: RUN_TIME
+      - key: CORS_ORIGINS
+        value: "https://www.hirecraft.me,https://hirecraft.me"   # ← update with your actual domain once set up
+        scope: RUN_TIME
+
+static_sites:
+  - name: frontend
+    source_dir: frontend
+    github:
+      branch: main
+      deploy_on_push: true
+    build_command: npm ci && npm run build
+    output_dir: dist
+    environment_slug: node-js
+    envs:
+      - key: VITE_API_URL
+        value: "https://api.hirecraft.me"   # ← update with your actual API domain once set up
+        scope: BUILD_TIME
