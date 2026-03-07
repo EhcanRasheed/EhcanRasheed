@@ -901,7 +901,7 @@ Be fair and professional. Output ONLY the raw JSON object.`,
       <html>
       <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <div style="max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-          <h2 style="color: #c4a052; text-align: center;">HireCraft — New Interview Completed</h2>
+          <h2 style="color: #c4a052; text-align: center;">Hire-Craft — New Interview Completed</h2>
           <p>Hello <b>${hiringUser.fullName}</b>,</p>
           <p>A candidate has completed their interview:</p>
           <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
@@ -912,7 +912,7 @@ Be fair and professional. Output ONLY the raw JSON object.`,
           </div>
           <p>Log in to your Hiring Ease dashboard to view the full analysis.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="font-size: 12px; color: #888; text-align: center;">HireCraft Hiring Ease</p>
+          <p style="font-size: 12px; color: #888; text-align: center;">Hire-Craft Hiring Ease</p>
         </div>
       </body>
       </html>
@@ -920,7 +920,7 @@ Be fair and professional. Output ONLY the raw JSON object.`,
 
     await this.mailService.sendGenericMail(
       hiringUser.email,
-      'New Interview Completed — HireCraft',
+      'New Interview Completed — Hire-Craft',
       html,
     );
   }

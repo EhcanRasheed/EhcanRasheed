@@ -10,7 +10,7 @@ export default function HiringEaseLanding() {
         {/* Header */}
         <div style={styles.header}>
           <div style={styles.logo}>HC</div>
-          <span style={styles.brand}>HireCraft <span style={{ color: '#c4a052' }}>Hiring Ease</span></span>
+          <span style={styles.brand}>Hire-Craft <span style={{ color: '#c4a052' }}>Hiring Ease</span></span>
         </div>
 
         {/* Hero */}
@@ -82,7 +82,7 @@ export default function HiringEaseLanding() {
 
         {/* Footer */}
         <div style={styles.footer}>
-          <p>© 2026 HireCraft. All rights reserved.</p>
+          <p>© 2026 Hire-Craft. All rights reserved.</p>
         </div>
       </div>
     </div>

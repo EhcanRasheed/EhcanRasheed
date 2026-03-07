@@ -33,7 +33,7 @@ export default function Dashboard() {
       <aside style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
           <div style={styles.logoBox}>HC</div>
-          <span style={styles.brandName}>HireCraft</span>
+          <span style={styles.brandName}>Hire-Craft</span>
         </div>
 
         <nav style={styles.sideNav}>
@@ -184,7 +184,7 @@ export default function Dashboard() {
             <div style={styles.footerBrand}>
               <div style={styles.footerLogo}>HC</div>
               <div>
-                <p style={styles.footerTitle}>HireCraft</p>
+                <p style={styles.footerTitle}>Hire-Craft</p>
                 <p style={styles.footerSubtitle}>AI-powered recruitment platform</p>
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div style={styles.footerBottom}>
-            <p>© 2026 HireCraft AI. All rights reserved.</p>
+            <p>© 2026 Hire-Craft AI. All rights reserved.</p>
           </div>
         </footer>
       </main>

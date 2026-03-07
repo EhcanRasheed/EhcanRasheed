@@ -35,7 +35,7 @@ export class ResumeService implements OnModuleInit {
         throw new Error('PDF is unreadable or empty.');
       }
 
-      console.log('✅ Extraction successful for HireCraft. Length:', resumeText.length);
+      console.log('✅ Extraction successful for Hire-Craft. Length:', resumeText.length);
 
       const chatCompletion = await this.groq.chat.completions.create({
         messages: [
@@ -65,7 +65,7 @@ export class ResumeService implements OnModuleInit {
       return JSON.parse(rawResponse);
 
     } catch (error) {
-      console.error('--- HIRECRAFT SYSTEM ERROR ---', error);
+      console.error('--- HIRE-CRAFT SYSTEM ERROR ---', error);
       throw new InternalServerErrorException('Analysis failed: ' + error.message);
     }
   }
@@ -81,7 +81,7 @@ export class ResumeService implements OnModuleInit {
     messages: [
       { 
         role: 'system', 
-        content: `You are the HireCraft AI Career Coach. Your goal is to help the user bridge the gap between their resume and the target role: "${key}".
+        content: `You are the Hire-Craft AI Career Coach. Your goal is to help the user bridge the gap between their resume and the target role: "${key}".
 
 CONTEXT:
 - User's Match Score: ${analysis?.overallScore}%

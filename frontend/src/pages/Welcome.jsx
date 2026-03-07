@@ -139,7 +139,7 @@ export default function Welcome() {
         <div style={styles.logoBox}>HC</div>
         
         <h1 style={styles.title}>
-          Master Your Career with <span style={styles.brandHighlight}>HireCraft</span>
+          Master Your Career with <span style={styles.brandHighlight}>Hire-Craft</span>
         </h1>
         
         <p style={styles.subtitle}>

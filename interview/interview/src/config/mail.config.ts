@@ -7,5 +7,5 @@ export const mailConfig = {
   user: process.env.MAIL_USER || 'ai.interviewer02@gmail.com', // Updated fallback
   pass: process.env.MAIL_PASS || '',
   from: process.env.MAIL_FROM_EMAIL || 'ai.interviewer02@gmail.com', // Updated fallback
-  fromName: process.env.MAIL_FROM_NAME || 'HireCraft: Interview Preparation App', // Updated fallback
+  fromName: process.env.MAIL_FROM_NAME || 'Hire-Craft: Interview Preparation App', // Updated fallback
 };

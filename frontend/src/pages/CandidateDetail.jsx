@@ -51,7 +51,7 @@ export default function CandidateDetail() {
     }
   };
 
-  /* ───────── PDF Report with HireCraft Theme ───────── */
+  /* ───────── PDF Report with Hire-Craft Theme ───────── */
   const downloadReportPDF = () => {
     if (!candidate) return;
     const { evaluation, answers, resumeAnalysis } = candidate;
@@ -98,7 +98,7 @@ export default function CandidateDetail() {
     doc.setTextColor(...gold);
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('HireCraft', margin + 16, 18);
+    doc.text('Hire-Craft', margin + 16, 18);
 
     doc.setTextColor(...white);
     doc.setFontSize(10);
@@ -331,7 +331,7 @@ export default function CandidateDetail() {
       doc.rect(0, H - 12, W, 0.5, 'F');
       doc.setTextColor(...gray);
       doc.setFontSize(7);
-      doc.text(`HireCraft Interview Report — ${candidate.name}`, margin, H - 5);
+      doc.text(`Hire-Craft Interview Report — ${candidate.name}`, margin, H - 5);
       doc.text(`Page ${p} of ${pageCount}`, W - margin, H - 5, { align: 'right' });
     }
 

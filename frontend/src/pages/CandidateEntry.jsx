@@ -143,7 +143,7 @@ export default function CandidateEntry() {
         </div>
 
         <p style={{ textAlign: 'center', color: '#3a3a3f', fontSize: 11, marginTop: 32 }}>
-          Powered by HireCraft · AI Interview Platform
+          Powered by Hire-Craft · AI Interview Platform
         </p>
       </div>
     </div>

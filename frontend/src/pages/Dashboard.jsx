@@ -98,7 +98,7 @@ export default function Dashboard() {
           <div style={styles.footerBrandCol}>
             <div style={styles.footerLogoRow}>
               <div style={styles.logoBoxSmall}>HC</div>
-              <span style={styles.footerBrandName}>HireCraft</span>
+              <span style={styles.footerBrandName}>Hire-Craft</span>
             </div>
             <p style={styles.footerDescription}>
               Crafting the future of recruitment through generative AI and data-driven insights.
@@ -112,7 +112,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div style={styles.copyrightSection}>
-          <p>&copy; 2026 HireCraft AI. All rights reserved.</p>
+          <p>&copy; 2026 Hire-Craft AI. All rights reserved.</p>
         </div>
       </footer>
     </AppLayout>

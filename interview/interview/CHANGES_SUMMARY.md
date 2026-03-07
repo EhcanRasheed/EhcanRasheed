@@ -308,7 +308,7 @@ MAIL_PORT=587
 MAIL_USER=your_email@gmail.com
 MAIL_PASS=your_app_password_here
 MAIL_FROM_EMAIL=your_email@gmail.com
-MAIL_FROM_NAME=HireCraft: Interview Preparation App
+MAIL_FROM_NAME=Hire-Craft: Interview Preparation App
 
 # Frontend URL (for password reset links)
 FRONTEND_URL=http://localhost:5173

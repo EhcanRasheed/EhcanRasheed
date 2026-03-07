@@ -16,7 +16,7 @@ export class MailService {
   private async sendMail(to: string, subject: string, html: string) {
     try {
       await this.resend.emails.send({
-        from: 'HireCraft <noreply@hire-craft.app>',
+        from: 'Hire-Craft <noreply@hire-craft.app>',
         to,
         subject,
         html,
@@ -36,9 +36,9 @@ export class MailService {
       <html>
       <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
         <div style="max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-          <h2 style="color: #007bff; text-align: center;">Welcome to HireCraft!</h2>
+          <h2 style="color: #007bff; text-align: center;">Welcome to Hire-Craft!</h2>
           <p>Hello <b>${name}</b>,</p>
-          <p>Thank you for choosing HireCraft for your interview preparation. Please use the following One-Time Password (OTP) to verify your account:</p>
+          <p>Thank you for choosing Hire-Craft for your interview preparation. Please use the following One-Time Password (OTP) to verify your account:</p>
           <div style="background: #f8f9fa; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #007bff; border: 2px dashed #007bff; border-radius: 8px; margin: 20px 0;">
             ${otp}
           </div>
@@ -50,7 +50,7 @@ export class MailService {
       </html>
     `;
 
-    await this.sendMail(email, 'Your HireCraft Verification Code', html);
+    await this.sendMail(email, 'Your Hire-Craft Verification Code', html);
   }
 
   /**
@@ -80,7 +80,7 @@ export class MailService {
       </html>
     `;
 
-    await this.sendMail(email, 'Reset Your HireCraft Password', html);
+    await this.sendMail(email, 'Reset Your Hire-Craft Password', html);
   }
 
   /**
@@ -92,13 +92,13 @@ export class MailService {
       <body style="font-family: Arial, sans-serif;">
         <h2 style="color: #28a745;">Registration Verified!</h2>
         <p>Hello ${name},</p>
-        <p>Your HireCraft account is now fully active. You can now log in and access all our AI-powered interview tools.</p>
+        <p>Your Hire-Craft account is now fully active. You can now log in and access all our AI-powered interview tools.</p>
         <p>Best of luck with your preparation!</p>
       </body>
       </html>
     `;
 
-    await this.sendMail(email, 'Welcome to HireCraft', html);
+    await this.sendMail(email, 'Welcome to Hire-Craft', html);
   }
 
   /**

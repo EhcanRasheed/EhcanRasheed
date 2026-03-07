@@ -161,7 +161,7 @@ export default function AppLayout({
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={styles.logoBox}>HC</div>
             {(isExpanded || !isHoverMode) && (
-              <span style={styles.brandName}>HireCraft</span>
+              <span style={styles.brandName}>Hire-Craft</span>
             )}
           </div>
           {(isExpanded || !isHoverMode) && user?.fullName && (

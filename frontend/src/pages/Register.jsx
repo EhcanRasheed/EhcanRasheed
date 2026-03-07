@@ -107,7 +107,7 @@ export default function Register() {
         <div style={styles.header}>
           <div style={styles.logo}>HC</div>
           <h2 style={styles.title}>Create Account</h2>
-          <p style={styles.subtitle}>Join HireCraft to start your preparation.</p>
+          <p style={styles.subtitle}>Join Hire-Craft to start your preparation.</p>
         </div>
 
         {/* messages now shown via toast */}

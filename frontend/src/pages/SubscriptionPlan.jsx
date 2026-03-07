@@ -236,21 +236,21 @@ export default function SubscriptionPlan() {
                 <>
                   <p style={{ fontSize: 12, color: '#86868b', marginBottom: 4 }}>Send to EasyPaisa number:</p>
                   <p style={{ fontSize: 18, color: '#c4a052', fontWeight: 700, letterSpacing: 2, fontFamily: 'monospace' }}>0300 - 1234567</p>
-                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>HireCraft (Pvt) Ltd.</strong></p>
+                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>Hire-Craft (Pvt) Ltd.</strong></p>
                 </>
               )}
               {paymentMethod === 'jazzcash' && (
                 <>
                   <p style={{ fontSize: 12, color: '#86868b', marginBottom: 4 }}>Send to JazzCash number:</p>
                   <p style={{ fontSize: 18, color: '#c4a052', fontWeight: 700, letterSpacing: 2, fontFamily: 'monospace' }}>0321 - 7654321</p>
-                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>HireCraft (Pvt) Ltd.</strong></p>
+                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>Hire-Craft (Pvt) Ltd.</strong></p>
                 </>
               )}
               {paymentMethod === 'bank' && (
                 <>
                   <p style={{ fontSize: 12, color: '#86868b', marginBottom: 4 }}>Meezan Bank Ltd.</p>
                   <p style={{ fontSize: 15, color: '#c4a052', fontWeight: 700, letterSpacing: 1, fontFamily: 'monospace' }}>IBAN: PK42 MEZN 0001 1234 5678 9101</p>
-                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>HireCraft (Pvt) Ltd.</strong></p>
+                  <p style={{ fontSize: 12, color: '#86868b', marginTop: 6 }}>Account Title: <strong style={{ color: '#e8e8eb' }}>Hire-Craft (Pvt) Ltd.</strong></p>
                 </>
               )}
             </div>

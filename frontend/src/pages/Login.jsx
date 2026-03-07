@@ -234,7 +234,7 @@ export default function Login() {
         <div style={styles.logoSection}>
           <div style={styles.logoBox}>HC</div>
           <h2 style={styles.title}>Welcome Back</h2>
-          <p style={styles.subtitle}>Log in to your HireCraft account</p>
+          <p style={styles.subtitle}>Log in to your Hire-Craft account</p>
         </div>
 
         {/* errors now shown via toast */}

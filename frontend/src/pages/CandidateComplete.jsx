@@ -29,7 +29,7 @@ export default function CandidateComplete() {
           </p>
 
           <div style={{ marginTop: 24, textAlign: 'center' }}>
-            <a href="/" style={styles.link}>Visit HireCraft →</a>
+            <a href="/" style={styles.link}>Visit Hire-Craft →</a>
           </div>
         </div>
       </div>
