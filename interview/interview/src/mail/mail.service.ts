@@ -16,7 +16,7 @@ export class MailService {
   private async sendMail(to: string, subject: string, html: string) {
     try {
       await this.resend.emails.send({
-        from: 'HireCraft <onboarding@resend.dev>',
+        from: 'HireCraft <noreply@hire-craft.appp>',
         to,
         subject,
         html,
