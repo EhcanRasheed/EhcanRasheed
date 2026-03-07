@@ -1,25 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import { mailConfig } from '../config/mail.config';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private resend: Resend;
 
   constructor() {
-    // This uses the ai.interviewer02@gmail.com credentials from your .env
-    this.transporter = nodemailer.createTransport({
-      host: mailConfig.host,
-      port: mailConfig.port,
-      secure: mailConfig.port === 465, // true for 465, false for 587
-      auth: {
-        user: mailConfig.user,
-        pass: mailConfig.pass, // Your 16-character App Password
-      },
-      connectionTimeout: 5000,
-      greetingTimeout: 5000,
-      socketTimeout: 5000,
-    });
+    this.resend = new Resend(process.env.RESEND_API_KEY);
   }
 
   public async sendGenericMail(to: string, subject: string, html: string) {
@@ -28,8 +15,8 @@ export class MailService {
 
   private async sendMail(to: string, subject: string, html: string) {
     try {
-      await this.transporter.sendMail({
-        from: `"${mailConfig.fromName}" <${mailConfig.from}>`,
+      await this.resend.emails.send({
+        from: 'HireCraft <onboarding@resend.dev>',
         to,
         subject,
         html,
