@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# Keep authenticated and sensitive app surfaces out of search indexing.
+Disallow: /dashboard
+Disallow: /chatbot
+Disallow: /resume
+Disallow: /interview
+Disallow: /subscription
+Disallow: /change-password
+Disallow: /change-username
+Disallow: /admin
+Disallow: /verify-otp
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /login
+Disallow: /register
+Disallow: /hiring-ease/login
+Disallow: /hiring-ease/register
+Disallow: /hiring-ease/payment
+Disallow: /hiring-ease/dashboard
+Disallow: /hiring-ease/banks
+Disallow: /hiring-ease/create-session
+Disallow: /hiring-ease/session
+Disallow: /hiring-ease/candidate
+Disallow: /hire/
+
+Sitemap: https://hire-craft.app/sitemap.xml

@@ -45,6 +45,7 @@ import CandidateEntry from './pages/CandidateEntry';
 import CandidateInterview from './pages/CandidateInterview';
 import CandidateComplete from './pages/CandidateComplete';
 import HoverEffects from './components/HoverEffects';
+import SeoManager from './components/SeoManager';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -109,6 +110,7 @@ export default function App() {
       <HiringAuthProvider>
         <ToastProvider>
           <BrowserRouter>
+            <SeoManager />
             <HoverEffects />
             <div className="workspace">
               <AppRoutes />
