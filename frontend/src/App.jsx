@@ -22,6 +22,12 @@ import ChangePassword from './pages/ChangePassword';
 import SubscriptionPlan from './pages/SubscriptionPlan';
 import NotFound from './pages/NotFound';
 
+// ──── New Public SEO Pages ────
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Pricing from './pages/Pricing';
+import FAQ from './pages/FAQ';
+
 // ──── Admin pages ────
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
@@ -59,6 +65,13 @@ function AppRoutes() {
       <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* ── New Public SEO Pages ── */}
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/faq" element={<FAQ />} />
+
 
       {/* ── Protected Main Platform Routes ── */}
       <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />

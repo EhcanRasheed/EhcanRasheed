@@ -218,7 +218,16 @@ export default function Welcome() {
             Create Account
           </button>
         </div>
-      </div>
+      {/* SEO Footer Links */}
+      <footer style={{ marginTop: 48, textAlign: 'center', color: '#86868b', fontSize: 14 }}>
+        <nav style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
+          <a href="/about" style={{ color: '#c4a052', textDecoration: 'none' }}>About</a>
+          <a href="/contact" style={{ color: '#c4a052', textDecoration: 'none' }}>Contact</a>
+          <a href="/pricing" style={{ color: '#c4a052', textDecoration: 'none' }}>Pricing</a>
+          <a href="/faq" style={{ color: '#c4a052', textDecoration: 'none' }}>FAQ</a>
+        </nav>
+      </footer>
     </div>
+  </div>
   );
 }

@@ -18,7 +18,7 @@ import { HiRocketLaunch, HiCog6Tooth, HiShieldCheck } from 'react-icons/hi2';
  */
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Home', key: 'dashboard', icon: HiHome },
+  { to: '/dashboard', label: 'Dashboard', key: 'dashboard', icon: HiHome },
   { to: '/resume', label: 'Resume Analysis', key: 'resume', icon: HiDocumentText },
   { to: '/chatbot', label: 'Chatbot', key: 'chatbot', icon: HiChatBubbleLeftRight },
   { to: '/interview', label: 'Interview Preparation', key: 'interview', icon: HiAcademicCap },
